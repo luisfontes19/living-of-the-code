@@ -1,0 +1,25 @@
+name: NPM Lifecycle Scripts
+id: npm-lifecycle-scripts
+description: >
+  NPM packages can define preinstall, postinstall, and install scripts in package.json
+  that execute arbitrary commands automatically when a package is installed. Attackers
+  publish malicious packages or compromise existing ones to execute code on developer machines
+  without any explicit action beyond running `npm install`.
+author: LOC Team
+tags:
+  - npm
+  - code-execution
+
+exploitation: |
+  Attackers publish packages to npm (often via typosquatting or dependency confusion)
+  that include a `preinstall` or `postinstall` script in their `package.json`. When a
+  developer runs `npm install`, these scripts execute automatically with the privileges
+  of the user.
+
+  Newer versions of npm do not run `preinstall` and `postinstall` scripts automatically
+
+references:
+  - url: https://docs.npmjs.com/cli/v11/using-npm/scripts
+    description: Official npm documentation on lifecycle scripts
+  - url: https://opensourcemalware.com/blog/malware-abuses-vscode-lifecycle-scripts
+    description: How malware abuses npm lifecycle scripts and VS Code tasks

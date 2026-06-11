@@ -1,0 +1,32 @@
+name: Git Hooks
+id: git-hooks
+description: >
+  Git repositories can include hooks in .git/hooks/ or via core.hooksPath configuration
+  that execute scripts automatically on common git operations like checkout, merge, commit,
+  and pull. Malicious repositories can weaponize hooks to execute code when a developer
+  interacts with the repository.
+author: LOC Team
+tags:
+  - git
+  - husky
+  - code-execution
+
+exploitation: |
+  Git hooks are scripts that run automatically at various points in the git workflow.
+  While hooks in `.git/hooks/` are not cloned by default, attackers can exploit hooks through:
+
+  1. **core.hooksPath in .gitconfig**: Repository includes a `.gitconfig` or instructions
+     to set a custom hooks path pointing to committed scripts
+  2. **Husky/lefthook/pre-commit configs**: Many projects use hook managers that auto-install
+     hooks from committed config files on `npm install` or equivalent
+  3. **Hooks via git-template**: If a ~/.git-template folder exists, all files not
+     starting with a dot are copied to new repositories, potentially including malicious hooks.
+
+  The `post-checkout`, `post-merge`, `pre-push` and `pre-commit` hooks are particularly dangerous
+  as they trigger on common operations developers perform frequently.
+
+references:
+  - url: https://git-scm.com/docs/githooks
+    description: Official Git hooks documentation
+  - url: https://typicode.github.io/husky/
+    description: Husky - Modern native git hooks made easy

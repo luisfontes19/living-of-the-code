@@ -1,0 +1,50 @@
+{
+    "name": "living-of-the-developers",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "remoteUser": "root",
+    "postCreateCommand": "",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot",
+                "ms-python.python",
+                "ms-python.debugpy",
+                "ms-python.isort",
+                "ms-python.vscode-pylance",
+                "redhat.vscode-yaml",
+                "anthropic.claude-code",
+                "luisfontes19.watchtower"
+            ],
+            "settings": {
+                "[python]": {
+                    "editor.formatOnType": true
+                },
+                "python.analysis.importFormat": "relative",
+                "python.analysis.autoSearchPaths": false,
+                "python.analysis.autoImportCompletions": true,
+                "python.analysis.languageServerMode": "full",
+                "python.analysis.typeCheckingMode": "basic",
+                "editor.suggestSelection": "first",
+                "editor.tabSize": 4,
+                "editor.formatOnPaste": true,
+                "editor.formatOnSave": true,
+                "editor.inlineSuggest.enabled": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": "always"
+                },
+                "editor.unicodeHighlight.invisibleCharacters": true,
+                "editor.unicodeHighlight.ambiguousCharacters": true,
+                "editor.unicodeHighlight.includeComments": true,
+                "editor.unicodeHighlight.includeStrings": true,
+                "chat.plugins.enabled": false,
+                "chat.mcp.autostart": "never",
+                "chat.extensionTools.enabled": false,
+                "chat.useClaudeHooks": true,
+                "chat.useCustomAgentHooks": false
+            }
+        }
+    }
+}

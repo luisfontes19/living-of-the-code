@@ -1,0 +1,68 @@
+name: Python *.pth Files
+id: python-pth
+description: >
+  Python packages using *.pth files can execute arbitrary code during installation.
+  If a malicious library contains a .pth file this code will run every time python is run.
+author: LOC Team
+tags:
+  - pip
+  - python
+  - code-execution
+  - hatch
+
+exploitation: |
+  Python's .pth files are a powerful feature that can be abused for code execution. When a package
+  with a .pth file is installed, the code in that file executes every time Python runs. Attackers
+  can publish malicious packages to PyPI or compromise existing ones to include .pth files that
+  execute arbitrary code on developer machines without any explicit action beyond installing the package.
+
+  The .pth file can contain import statements or executable code that runs on interpreter startup,
+  without the need to include the library in the codebase.
+
+  ### Option 1: Manually create a .pth file
+
+  In order for this to work, the .pth needs to be in the site-packages directory, which by default will
+  be inside the library folder. So solve this, if you have a `pyproject.toml` file you can force the file
+  to go into the site-packages by adding the following lines:
+
+  ```toml
+  [build-system]
+  requires = ["hatchling"]
+  build-backend = "hatchling.build"
+
+  [tool.hatch.build.targets.wheel]
+  packages = ["test_pkg"]
+
+  [tool.hatch.build.targets.wheel.force-include]
+  "malicious.pth" = "malicious.pth"
+  ````
+
+  Then the `malicious.pth` file can contain code like this:
+
+  ```python
+  import sys; print("malicious")
+  ````
+
+  Note that code only runs if lines that start with an import statement.
+
+  ### Option 2: Use hatch's autorun hook
+
+  Being such a helpful tool hatch even has a native way to generate the pth files for you. So you can use this simpler approach:
+
+  ```toml
+  [tool.hatch.build.hooks.autorun]
+  dependencies = ["hatch-autorun"]
+  code = """
+  print("malicious")
+  """
+  ````
+
+  It automatically ads an import statement and the relevant code after.
+
+  The problems with pth files is being slowly deprecated starting in python 3.15 with [PEP 829](https://peps.python.org/pep-0829/)
+
+references:
+  - url: https://dfir.ch/posts/publish_python_pth_extension/
+    description: Analysis of Python's .pth files as a persistence mechanism
+  - url: https://peps.python.org/pep-0829
+    description: PEP 829 - Package Startup Configuration Files

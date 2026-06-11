@@ -1,0 +1,61 @@
+name: Invisible Unicode
+id: invisible-unicode
+description: >
+  Certain Unicode characters are completely invisible but still valid inside source code.
+  Attackers use them to hide malicious payloads in what looks like normal code — the file
+  passes review, the diff looks clean, but hidden bytes are decoded and executed at runtime.
+author: LOC Team
+tags:
+  - invisible-code
+  - steganography
+
+exploitation: |
+  Unicode includes ranges of characters that render as nothing — no glyph, no space.
+  Two such ranges are the Variation Selectors (U+FE00–FE0F and U+E0100–E01EF), originally
+  intended for font styling hints. When placed inside a string literal, they are invisible
+  to the reader but present in the file as real bytes.
+
+  An attacker encodes a payload into a sequence of these characters and hides it inside
+  what looks like an empty string. A small decoder reads the hidden code points, reconstructs
+  the original bytes, and calls `eval()`:
+
+  ```python
+  def decode_from_invisible(invisible_text: str) -> str:
+    """Decodes a sequence of invisible Unicode tag characters back to a visible string."""
+    visible_text = ""
+    for char in invisible_text:
+        # Reverse the process: get the character's value and subtract the base tag value to get the ASCII value.
+        ascii_char = chr(ord(char) - 0xE0000)
+        visible_text += ascii_char
+    return visible_text
+
+
+  malicious = '󠁌󠁯󠁲󠁥󠁭󠀠󠁩󠁰󠁳󠁵󠁭󠀠󠁴󠁥󠁭󠁰󠁯󠁲󠀠󠁱󠁵󠁩󠁳󠀠󠁡󠁵󠁴󠁥󠀠󠁳󠁥󠁤󠀠󠁥󠁸󠁥󠁲󠁣󠁩󠁴󠁡󠁴󠁩󠁯󠁮󠀠󠁥󠁴󠀠󠁯󠁦󠁦󠁩󠁣󠁩󠁡󠀠󠁥󠁬󠁩󠁴󠀠󠁥󠁴󠀠󠁭󠁩󠁮󠁩󠁭󠀠󠁣󠁵󠁬󠁰󠁡󠀠󠁡󠁤󠀠󠁩󠁮󠀠󠁭󠁯󠁬󠁬󠁩󠁴󠀠󠁮󠁵󠁬󠁬󠁡󠀠󠁥󠁳󠁳󠁥󠀠󠁳󠁩󠁮󠁴󠀠󠁴󠁥󠁭󠁰󠁯󠁲󠀠󠁩󠁮󠁣󠁩󠁤󠁩󠁤󠁵󠁮󠁴󠀠󠁥󠁸󠁣󠁥󠁰󠁴󠁥󠁵󠁲󠀠󠁤󠁯󠁬󠁯󠁲󠀠󠁭󠁯󠁬󠁬󠁩󠁴󠀠󠁳󠁩󠁴󠀠󠁵󠁴󠀠󠁣󠁯󠁮󠁳󠁥󠁱󠁵󠁡󠁴󠀠󠁵󠁬󠁬󠁡󠁭󠁣󠁯󠀠󠁥󠁸󠀠󠁰󠁡󠁲󠁩󠁡󠁴󠁵󠁲󠀠'
+
+  print(decode_from_invisible(malicious))
+  ```
+
+  To create the poisoned string, an attacker converts each byte of their script into the
+  corresponding variation selector value and concatenates them. The result looks like
+  an empty string:
+
+  ```python
+  def encode_to_invisible(visible_text: str) -> str:
+    """Encodes a visible string into a sequence of invisible Unicode tag characters."""
+    invisible_text = ""
+    for char in visible_text:
+        # The U+E0000 block maps directly to ASCII. We get the ASCII value and add it to the base tag character.
+        tag_char = chr(0xE0000 + ord(char))
+        invisible_text += tag_char
+    return invisible_text
+  ```
+
+  Although the examples above use python this type of attack is language-agnostic and can be used anywhere invisible unicode characters are valid
+
+  Some IDEs have started adding support to make these characters visible, but many still don't by default, so this technique remains a stealthy way to smuggle code past human reviewers.
+
+references:
+  - url: https://www.aikido.dev/blog/glassworm-returns-unicode-attack-github-npm-vscode
+    description: Real-world campaign using this technique across GitHub, npm, and VS Code
+  - url: https://unicode.org/faq/private_use.html
+    description: Unicode FAQ — Private Use Area and Variation Selectors

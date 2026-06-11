@@ -1,0 +1,14 @@
+{
+    "name": "living-of-the-code",
+    "version": "1.0.0",
+    "description": "Living of the Code - A catalog of attack techniques targeting developers",
+    "scripts": {
+        "build": "node build.js",
+        "dev": "node build.js --watch",
+        "serve": "node build.js && npx serve site -l 4000"
+    },
+    "dependencies": {
+        "js-yaml": "^4.1.0"
+    },
+    "license": "MIT"
+}

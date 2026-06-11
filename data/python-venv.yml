@@ -1,0 +1,35 @@
+name: Python Virtual Environment (venv)
+id: python-venv
+description: >
+  A committed .venv (or venv) directory can contain replaced or wrapped
+  binaries and startup hooks that execute attacker code transparently whenever
+  a developer activates the environment or invokes any tool installed inside it.
+author: LOC Team
+tags:
+  - python
+  - code-execution
+
+exploitation: |
+  Virtual environments are normally generated locally and listed in `.gitignore`,
+  but a committed `.venv` folder is treated as part of the project by most
+  editors and CI systems. Tooling like VS Code automatically detects and activates
+  a `.venv` at the workspace root. An attacker who can commit to the repo (or
+  whose PR is checked out locally) can ship malicious binaries alongside
+  legitimate-looking interpreter stubs.
+
+  ### What can be replaced
+
+  - `.venv/bin/python` (and `python3`, `pythonX.Y`) — wrapper runs attacker code before delegating to the real interpreter
+  - `.venv/bin/pip` / `pip3` — intercepts every install, freeze, or download
+  - `.venv/bin/<tool>` (`pytest`, `ruff`, `mypy`, `black`, `uvicorn`, etc.) — invoked constantly via pre-commit, Makefiles, and IDE integrations
+  - `.venv/bin/activate` (`activate.fish`, `activate.csh`) — runs in the developer's current shell via `source`, has access to all exported secrets
+  - `.venv/lib/pythonX.Y/site-packages/sitecustomize.py` — auto-executed on every interpreter start, including subprocesses and IDE language servers
+  - `.venv/pyvenv.cfg` (`home` key) — redirects the base interpreter to an attacker-controlled path
+
+references:
+  - url: https://docs.python.org/3/library/venv.html
+    description: Python venv documentation
+  - url: https://docs.python.org/3/library/site.html
+    description: Python site module — sitecustomize.py loading behaviour
+  - url: https://docs.python.org/3/library/site.html#pyvenv-cfg
+    description: pyvenv.cfg format reference

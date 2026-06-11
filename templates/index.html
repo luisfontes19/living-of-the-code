@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOC - Living of the Code</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/github-dark.min.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container">
+            <h1 class="site-title">LOC</h1>
+            <p class="site-subtitle">Living of the Code</p>
+            <p class="site-description">A curated list of attack techniques that target software developers in their
+                natural habitat: code.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="controls">
+            <div class="search-box">
+                <input type="text" id="search" placeholder="Search techniques..." autocomplete="off">
+            </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Tags</label>
+                    <div class="filter-buttons" id="tag-filters"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-info">
+            <span id="results-count">0</span> techniques found
+        </section>
+
+        <section class="techniques-grid" id="techniques-grid"></section>
+    </main>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="modal">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <div class="modal-content" id="modal-content"></div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>LOC — Living of the Code. Documenting attack vectors that target developers.</p>
+        </div>
+    </footer>
+
+    <!-- Templates -->
+    <template id="card-template">
+        <div class="technique-card">
+            <div class="card-header">
+                <span class="card-name"></span>
+                <span class="card-id"></span>
+            </div>
+            <div class="card-description"></div>
+            <div class="card-tags"></div>
+        </div>
+    </template>
+
+    <template id="tag-template">
+        <span class="tag"></span>
+    </template>
+
+    <template id="filter-btn-template">
+        <button class="filter-btn"></button>
+    </template>
+
+    <template id="modal-detail-template">
+        <header class="technique-header">
+            <h1 class="technique-name"></h1>
+            <span class="technique-id"></span>
+            <div class="technique-meta">
+                <span class="meta-author"></span>
+            </div>
+            <div class="technique-tags"></div>
+        </header>
+        <section class="technique-section" data-section="description">
+            <h2>Description</h2>
+            <div class="section-content"></div>
+        </section>
+        <section class="technique-section" data-section="exploitation">
+            <h2>Exploitation</h2>
+            <div class="section-content"></div>
+        </section>
+        <section class="technique-section" data-section="references">
+            <h2>References</h2>
+            <ul class="references-list"></ul>
+        </section>
+    </template>
+
+    <template id="reference-template">
+        <li>
+            <a class="ref-url" target="_blank" rel="noopener"></a>
+            <span class="ref-description"></span>
+        </li>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="assets/app.js"></script>
+</body>
+
+</html>

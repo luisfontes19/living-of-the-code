@@ -1,0 +1,66 @@
+name: Trojan Source
+id: trojan-source
+description: >
+  Unicode includes control characters that tell text renderers how to reorder text for
+  right-to-left scripts. Editors and code review UIs obey them — compilers and interpreters
+  ignore them. An attacker can use this gap to make code look different to a reviewer than
+  what actually runs.
+author: LOC Team
+tags:
+  - invisible-code
+
+exploitation: |
+  The key characters are the bidirectional overrides (U+202E Right-to-Left Override,
+  U+2066 Left-to-Right Isolate, U+2069 Pop Directional Isolate, and a few others). They are
+  valid inside string literals and comments in virtually every language, so no compiler or
+  linter complains. But they flip or hide surrounding text when the file is rendered.
+
+  ### Hiding code inside a comment
+
+  A directional isolate inserted mid-comment can make the closing `*/` appear — to the
+  renderer — as if it is still inside the comment. The compiler disagrees:
+
+  ```c
+  /* verify permissions \u2066 access = ADMIN; \u2069 */
+  ```
+
+  What a reviewer reads: a comment that says "verify permissions".
+  What the compiler sees: `access = ADMIN;` executing as live code, followed by `*/` closing
+  an already-ended comment.
+
+  ### Making a string literal lie
+
+  Placing a Right-to-Left Override (U+202E) inside a string reverses how the renderer displays
+  the characters that follow it. The variable holds one value; the screen shows another:
+
+  ```python
+  # A reviewer sees:  role = "user"
+  # The runtime holds "user" + U+202E + a reversed privileged value
+  # U+202E causes everything after it to render right-to-left
+  role = "user" + "\u202E" + "..."
+  ```
+
+  An attacker uses this to disguise a privileged value as an innocuous one during code review.
+
+  ### Why it survives review
+
+  - The characters are invisible — no glyph, no space, nothing to spot
+  - The reordering happens in the renderer, so `git diff` and PR UIs show the misleading version
+  - The code is syntactically valid in every affected language
+
+  ### Detection
+
+  Search for directional control characters in source files:
+  ```bash
+  grep -rPn '[\x{202A}-\x{202E}\x{2066}-\x{2069}]' src/
+  ```
+
+  Most modern compilers also warn on this: GCC and Clang have a dedicated
+  bidirectional-character warning flag, Rust warns by default since 1.57,
+  and Go flags it via `go vet`.
+
+references:
+  - url: https://trojansource.codes/
+    description: Official Trojan Source site — paper and proof of concept
+  - url: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42574
+    description: CVE-2021-42574

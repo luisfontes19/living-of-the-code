@@ -1,0 +1,42 @@
+name: AI Prompt Injection
+id: ai-prompt-injection
+description: >
+  Files that can be used to inject malicious prompts into AI tools.
+author: LOC Team
+tags:
+  - ai
+  - prompt-injection
+
+exploitation: |
+  AI tools that use prompts to generate code or perform actions can be vulnerable to prompt injection attacks.
+  Attackers can craft malicious prompts that, when processed by the AI, cause it to execute unintended commands or generate harmful code.
+  These prompts can be hidden in various file types, such as README files, documentation, or even code comments.
+  When a developer interacts with the AI tool and it processes the malicious prompt, it can lead to security breaches, data leaks, or other harmful consequences.
+
+  ### Standardized Prompt Files
+  - .agents/**/*md
+  - **/AGENTS.md
+
+  ### Github Copilot Files
+  - .github/copilot-instructions.md
+  - .github/instructions/*.instructions.md
+  - .github/skills/*/SKILL.md
+  - .github/prompts/*/SKILL.md
+  - (Copilot tries to be compatible with most Claude files, so check claude list as well)
+
+  ### Claude
+  - .claude/rules/**/*.md
+  - .claude/skills/**/*.md
+  - .claude/commands/**/*.md
+  - .claude/agents/**/*.md
+  - .claude/plugins/**/*.md
+  - .claude/output-styles/**/*.md
+  - .claude/workflows/**/*.md
+  - .claude/agent-memory/**/*.md
+  - .workstreeinclude
+
+references:
+  - url: https://code.claude.com/docs/en/claude-directory
+    description: Github Copilot Prompt Files documentation
+  - url: https://code.claude.com/docs/en/claude-directory
+    description: Explore the .claude directory

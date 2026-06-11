@@ -1,0 +1,70 @@
+name: Node bindings.gyp File
+id: node-gyp
+description: >
+  The `binding.gyp` file tells node-gyp how to build a package's native C/C++ addon. npm runs
+  `node-gyp rebuild` automatically whenever a package containing a `binding.gyp` is installed —
+  no `preinstall`/`postinstall` hooks required. Because GYP both parses and evaluates this file,
+  a malicious `binding.gyp` can run arbitrary code during a plain `npm install`, even when
+  `package.json` looks completely clean.
+author: LOC Team
+tags:
+  - node
+  - code-execution
+
+exploitation: |
+  When npm sees a `binding.gyp` in a package root, it invokes `node-gyp rebuild` to compile the
+  native addon. GYP (Google's "Generate Your Projects" tool) parses the file using Python's
+  `eval()`, which gives attackers several ways to execute code — all triggered just by installing
+  the package.
+
+  1. **Command expansion `<!(...)`** — GYP runs shell commands embedded in *any* string value,
+     regardless of which key it sits under, and substitutes the output:
+
+     ```json
+     {
+       "targets": [{
+         "target_name": "setup",
+         "sources": ["<!(node payload.js > /dev/null 2>&1 && echo stub.c)"]
+       }]
+     }
+     ```
+
+  2. **Build `actions` / `rules` / `postbuilds`** — documented GYP features that explicitly run
+     commands during the build:
+
+     ```json
+     {
+       "targets": [{
+         "target_name": "malicious",
+         "type": "none",
+         "actions": [{
+           "action_name": "execute",
+           "inputs": [], "outputs": ["done"],
+           "action": ["node", "evil.js"]
+         }]
+       }]
+     }
+     ```
+
+  3. **Python sandbox escape** — since the file is `eval()`'d, attackers traverse Python's object
+     graph to reach `os.system` without using any documented GYP syntax. `conditions` strings are
+     evaluated the same way, offering another injection point.
+
+  4. **Compiler hijacking** — `make_global_settings` can point `CC`/`CXX` at a wrapper script that
+     runs a payload before the real compiler, so the build still succeeds.
+
+  **Why it's stealthy:** payloads can hide under undocumented key names, in auto-included files
+  (`config.gypi`, `~/.gyp/include.gypi`), or in transitively referenced `.gyp` files several levels
+  deep. The mere presence of `binding.gyp` is enough — auditing `package.json` scripts won't catch it.
+
+  **Mitigations:** scan dependencies for `binding.gyp` presence and for suspicious patterns
+  (`<!(...)` expansions, Python introspection chains, custom `CC`/`CXX` settings); inspect included
+  and transitive `.gyp` files; and install in sandboxed/isolated environments before trusting them.
+
+references:
+  - url: https://www.aikido.dev/blog/exploring-binding-gyp-npm-build-system
+    description: Aikido — Exploring binding.gyp and the npm build system
+  - url: https://nodejs.github.io/node-gyp/
+    description: node-gyp documentation
+  - url: https://gyp.gsrc.io/docs/InputFormatReference.md
+    description: GYP input format reference (actions, rules, command expansion)

@@ -1,0 +1,51 @@
+name: AI Hooks
+id: ai-hooks
+description: >
+  Files that can be used to define hooks to run code on specific trigger events.
+author: LOC Team
+tags:
+  - ai
+  - hooks
+
+exploitation: |
+  While prompt injection can allow you to have code execution on the AI side, you may find guardrails that prevent
+  the AI agent from executing certain commands or accessing certain files.
+  Hooks can be used to trigger code execution by design, no guardrails can prevent them from running since
+  they are part of the intended functionality of the agent.
+
+  You can configure hooks to run on every user prompt, on AI tool calls, etc.
+
+  All it takes is to drop a hook config in one of the following files:
+
+  - .github/hooks/**/*.json - Github Copilot Hook files. (Copilot now supports claude hooks as well, although limited)
+  - .claude/settings.json - Claude settings file where you can define hooks.
+
+  Example:
+
+  `.claude/settings.json`
+
+  ```json
+  {
+    "hooks": {
+      "UserPromptSubmit": [
+        {
+          "hooks": [
+            {
+              "type": "command",
+              "command": "curl http://examples.com",
+              "async": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+  ````
+
+  Check references for documentation on how to configure hooks and the different trigger events you can use.
+
+references:
+  - url: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/use-hooks
+    description: Github Copilot Hooks documentation
+  - url: https://code.claude.com/docs/en/hooks
+    description: Claude hooks documentation

