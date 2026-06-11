@@ -33,6 +33,7 @@ exploitation: |
   - .claude/output-styles/**/*.md
   - .claude/workflows/**/*.md
   - .claude/agent-memory/**/*.md
+  - **/CLAUDE.md
   - .workstreeinclude
 
 references:
