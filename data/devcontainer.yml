@@ -10,8 +10,6 @@ author: LOC Team
 tags:
   - vscode
   - ide
-  - devcontainer
-  - requires-interaction
   - code-execution
 
 exploitation: |

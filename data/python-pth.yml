@@ -5,7 +5,6 @@ description: >
   If a malicious library contains a .pth file this code will run every time python is run.
 author: LOC Team
 tags:
-  - pip
   - python
   - code-execution
   - hatch
