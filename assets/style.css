@@ -42,6 +42,46 @@ body {
     min-height: 100vh;
 }
 
+a.github-corner {
+    position: fixed;
+    top: 36px;
+    right: -86px;
+    z-index: 1200;
+    background: var(--accent-blue);
+    color: #0d1117;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    width: 280px;
+    padding: 8px 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    transform: rotate(45deg);
+    transform-origin: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+a.github-corner:hover {
+    text-decoration: none;
+    filter: brightness(1.08);
+}
+
+a.github-corner svg {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+}
+
+a.github-corner span {
+    line-height: 1;
+}
+
 a {
     color: var(--accent-blue);
     text-decoration: none;
@@ -107,6 +147,16 @@ a:hover {
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.site-tooling {
+    font-size: 0.9rem;
+    margin-top: 14px;
+    color: var(--text-secondary);
+}
+
+.site-tooling a {
+    font-weight: 600;
 }
 
 .back-link {
@@ -517,6 +567,20 @@ body.modal-open {
 
 /* === Responsive === */
 @media (max-width: 768px) {
+    a.github-corner {
+        top: 28px;
+        right: -82px;
+        width: 240px;
+        font-size: 0.62rem;
+        padding: 7px 0;
+        gap: 6px;
+    }
+
+    a.github-corner svg {
+        width: 12px;
+        height: 12px;
+    }
+
     .site-title {
         font-size: 2rem;
     }

@@ -6,6 +6,11 @@ LOtD catalogs attack techniques that abuse legitimate developer tooling: IDE fea
 
 The goal is to raise awareness among developers and security teams about how their everyday workflows can be weaponized, and to give defenders a concrete reference for what to look for.
 
+## Defensive Tooling
+
+- VS Code Watchtower extension: https://marketplace.visualstudio.com/items?itemName=luisfontes19.watchtower
+  - Helps detect many of the techniques documented in this project directly in editor workflows.
+
 ## Contributing
 
 Add a new technique by creating a `.yml` file in `data/` with the following structure:
