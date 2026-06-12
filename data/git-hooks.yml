@@ -26,6 +26,8 @@ exploitation: |
   as they trigger on common operations developers perform frequently.
 
 references:
+  - url: https://opensourcemalware.com/blog/dprk-git-hooks-malware/
+    description: Lazarus Group Uses Git Hooks To Hide Malware
   - url: https://git-scm.com/docs/githooks
     description: Official Git hooks documentation
   - url: https://typicode.github.io/husky/
