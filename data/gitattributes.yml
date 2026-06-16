@@ -1,4 +1,4 @@
-name: .gitattributes Filter Drivers
+name: .gitattributes
 id: gitattributes
 description: >
   .gitattributes files can bind clean/smudge filter drivers and diff drivers to

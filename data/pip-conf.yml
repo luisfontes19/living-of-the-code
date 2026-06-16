@@ -1,4 +1,4 @@
-name: pip.conf File
+name: pip.conf
 id: pip-conf
 description: >
   pip reads pip.conf (or pip.ini) and requirements files that can set index-url

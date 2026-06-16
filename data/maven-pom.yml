@@ -1,4 +1,4 @@
-name: Maven pom.xml Plugins
+name: Maven pom.xml
 id: maven-pom
 description: >
   A Maven pom.xml binds plugins to build lifecycle phases. Building or even

@@ -1,4 +1,4 @@
-name: VS Code Launch Configuration
+name: VS Code launch.json
 id: vscode-launch
 description: >
   .vscode/launch.json defines debug configurations that control what binary

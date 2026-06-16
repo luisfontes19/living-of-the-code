@@ -1,4 +1,4 @@
-name: Dev Container Configuration File
+name: devcontainers.json
 id: devcontainer
 description: >
   A `.devcontainer/devcontainer.json` file lets a repository define a complete, reproducible

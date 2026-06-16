@@ -1,4 +1,4 @@
-name: .npmrc Configuration Abuse
+name: .npmrc
 id: npmrc
 description: >
   .npmrc files configure npm behaviour at the project or user level. Attackers

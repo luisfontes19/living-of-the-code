@@ -1,4 +1,4 @@
-name: VS Code Tasks File
+name: VS Code tasks.json
 id: vscode-tasks
 description: >
   VS Code workspace configuration files (.vscode/tasks.json, .vscode/settings.json,
