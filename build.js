@@ -11,6 +11,20 @@ function ensureDir(dir) {
     }
 }
 
+function copyRecursive(src, dest) {
+    const stat = fs.statSync(src);
+    if (stat.isDirectory()) {
+        ensureDir(dest);
+        const entries = fs.readdirSync(src);
+        for (const entry of entries) {
+            copyRecursive(path.join(src, entry), path.join(dest, entry));
+        }
+        return;
+    }
+
+    fs.copyFileSync(src, dest);
+}
+
 function loadAllTechniques() {
     const techniques = [];
 
@@ -63,14 +77,14 @@ function build() {
 
     // Copy assets
     const assetsDir = path.join(__dirname, 'assets');
-    const assetFiles = fs.readdirSync(assetsDir);
-    for (const file of assetFiles) {
-        fs.copyFileSync(
-            path.join(assetsDir, file),
-            path.join(OUTPUT_DIR, 'assets', file)
+    const assetEntries = fs.readdirSync(assetsDir);
+    for (const entry of assetEntries) {
+        copyRecursive(
+            path.join(assetsDir, entry),
+            path.join(OUTPUT_DIR, 'assets', entry)
         );
     }
-    console.log(`  Copied ${assetFiles.length} asset files`);
+    console.log(`  Copied ${assetEntries.length} asset entries`);
 
     const elapsed = Date.now() - startTime;
     console.log(`\nBuild complete in ${elapsed}ms`);
