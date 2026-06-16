@@ -69,10 +69,12 @@
         const filtered = techniques.filter(t => {
             const name = (t.name || '').toLowerCase();
             const desc = (typeof t.description === 'string' ? t.description : '').toLowerCase();
+            const exploitation = (typeof t.exploitation === 'string' ? t.exploitation : '').toLowerCase();
             const tags = (t.tags || []).map(x => x.toLowerCase());
 
             const matchesSearch = !query ||
                 name.includes(query) || desc.includes(query) ||
+                exploitation.includes(query) ||
                 tags.some(x => x.includes(query));
 
             const matchesTags = activeTags.size === 0 ||
