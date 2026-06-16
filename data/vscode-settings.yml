@@ -15,25 +15,34 @@ exploitation: |
   VS Code allows defining settings in `.vscode/settings.json`. These settings allow
   multiple configurations that can be used to execute code:
 
+  ### JS/TS
+
+  - `js/ts.tsserver.node.path` - Runs on JS/TS project loaded
+  - `debug.javascript.defaultRuntimeExecutable` - Runs on JS/TS project loaded
+
   ### Python Related:
 
-  - `python.defaultInterpreterPath`
-  - `isort.path`
+  (Require python extension to be installed)
+
+  - `python.defaultInterpreterPath` - Runs on Python project loaded
+  - `isort.path` - Runs on Python project loaded
+  - `python.analysis.typeServerExecutable` - Runs on Python project loaded
   - `python.pipenvPath`
   - `python.poetryPath`
   - `python.pixiToolPath`
   - `python.testing.pytestPath`
-  - `python.analysis.typeServerExecutable`
 
   Most of these are executed automatically as soon as a python project is opened in vscode
 
-  ### JS/TS
-  - `js/ts.tsserver.node.path`
-  - `debug.javascript.defaultRuntimeExecutable`
-
-
   ### PHP
-  - `php.validate.executablePath`
+  - `php.validate.executablePath` - Runs on PHP project loaded
+
+  ### C/C++
+
+  (Requires C/C++ extension to be installed)
+
+  - C_Cpp.default.compilerPath
+  - C_Cpp.codeAnalysis.clangTidy.path
 
   ### Terminal settings
   - `terminal.integrated.env.linux`
