@@ -4,7 +4,6 @@ description: >
   A committed .venv (or venv) directory can contain replaced or wrapped
   binaries and startup hooks that execute attacker code transparently whenever
   a developer activates the environment or invokes any tool installed inside it.
-author: LOC Team
 tags:
   - python
   - code-execution

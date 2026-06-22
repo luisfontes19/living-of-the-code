@@ -6,7 +6,6 @@ description: >
   routine operations like checkout, add, and diff, so a committed .gitattributes
   combined with local or config-supplied driver definitions can run code on the
   developer's machine.
-author: LOC Team
 tags:
   - git
   - code-execution

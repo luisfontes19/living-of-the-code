@@ -5,7 +5,6 @@ description: >
   and .code-workspace files) can define tasks, terminal profiles, and settings that
   execute arbitrary commands. Opening a malicious repository in VS Code can trigger
   code execution through various auto-run mechanisms.
-author: LOC Team
 tags:
   - vscode
   - ide

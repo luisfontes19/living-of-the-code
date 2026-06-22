@@ -3,7 +3,6 @@ id: python-pth
 description: >
   Python packages using *.pth files can execute arbitrary code during installation.
   If a malicious library contains a .pth file this code will run every time python is run.
-author: LOC Team
 tags:
   - python
   - code-execution

@@ -5,7 +5,6 @@ description: >
   is executed when a developer starts a debug session in the editor. Attackers can replace
   or inject configurations that run a malicious program instead of, or in
   addition to, the legitimate one.
-author: LOC Team
 tags:
   - vscode
   - ide

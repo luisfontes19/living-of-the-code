@@ -5,7 +5,6 @@ description: >
   importing a project executes those plugin goals, and goals like exec, antrun,
   or groovy run arbitrary commands and code. A malicious pom.xml therefore runs
   code as soon as the developer builds or opens the project in an IDE.
-author: LOC Team
 tags:
   - java
   - maven

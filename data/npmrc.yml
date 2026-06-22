@@ -5,7 +5,6 @@ description: >
   can drop a malicious .npmrc in a repository to redirect package resolution to
   a rogue registry, replace core binaries invoked by npm, or exfiltrate
   credentials already stored in the file.
-author: LOC Team
 tags:
   - npm
   - code-execution

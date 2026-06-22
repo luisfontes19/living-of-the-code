@@ -5,7 +5,6 @@ description: >
   right-to-left scripts. Editors and code review UIs obey them — compilers and interpreters
   ignore them. An attacker can use this gap to make code look different to a reviewer than
   what actually runs.
-author: LOC Team
 tags:
   - invisible-code
 

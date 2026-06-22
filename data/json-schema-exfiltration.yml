@@ -4,7 +4,6 @@ description: >
   JSON files with a remote $schema reference that cause IDEs to automatically
   issue an HTTP GET request, leaking data embedded in the URL to an
   attacker-controlled server.
-author: LOC Team
 tags:
   - exfiltration
   - ide

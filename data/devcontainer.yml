@@ -6,7 +6,6 @@ description: >
   settings, and lifecycle commands. When a developer opens a project in its dev container, VS Code
   builds the container and applies this configuration verbatim, which a malicious repository can
   weaponize to install extensions, mount the host filesystem, and override editor settings.
-author: LOC Team
 tags:
   - vscode
   - ide

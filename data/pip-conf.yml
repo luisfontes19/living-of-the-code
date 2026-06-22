@@ -5,7 +5,6 @@ description: >
   and extra-index-url. A committed pip config or requirements file can silently
   redirect package resolution to an attacker-controlled index, enabling dependency
   confusion and delivery of backdoored packages whose install hooks then run code.
-author: LOC Team
 tags:
   - python
   - pip

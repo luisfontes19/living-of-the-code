@@ -5,7 +5,6 @@ description: >
   plugins, and the script-execution settings let a committed config point Yarn at
   an attacker-controlled release binary or load arbitrary plugin code, so running
   any yarn command in the repo executes that code.
-author: LOC Team
 tags:
   - yarn
   - npm

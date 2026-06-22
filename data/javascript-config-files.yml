@@ -5,7 +5,6 @@ description: >
   passive data: they are executed by Node.js (or a runtime bridge) when the tool starts.
   A malicious repository can hide payloads in config files that look like harmless object
   exports, leading to local code execution during normal development workflows.
-author: LOC Team
 tags:
   - javascript
   - typescript

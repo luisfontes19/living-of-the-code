@@ -5,7 +5,6 @@ description: >
   that execute scripts automatically on common git operations like checkout, merge, commit,
   and pull. Malicious repositories can weaponize hooks to execute code when a developer
   interacts with the repository.
-author: LOC Team
 tags:
   - git
   - husky

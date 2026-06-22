@@ -6,7 +6,6 @@ description: >
   no `preinstall`/`postinstall` hooks required. Because GYP both parses and evaluates this file,
   a malicious `binding.gyp` can run arbitrary code during a plain `npm install`, even when
   `package.json` looks completely clean.
-author: LOC Team
 tags:
   - node
   - code-execution

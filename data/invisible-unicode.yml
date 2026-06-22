@@ -4,7 +4,6 @@ description: >
   Certain Unicode characters are completely invisible but still valid inside source code.
   Attackers use them to hide malicious payloads in what looks like normal code — the file
   passes review, the diff looks clean, but hidden bytes are decoded and executed at runtime.
-author: LOC Team
 tags:
   - invisible-code
   - steganography

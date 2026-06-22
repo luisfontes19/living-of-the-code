@@ -2,7 +2,6 @@ name: AI Prompt Injection
 id: ai-prompt-injection
 description: >
   Files that can be used to inject malicious prompts into AI tools.
-author: LOC Team
 tags:
   - ai
   - prompt-injection

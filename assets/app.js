@@ -126,7 +126,6 @@
 
         frag.querySelector('.technique-name').textContent = t.name;
         frag.querySelector('.technique-id').textContent = t.id;
-        frag.querySelector('.meta-author').textContent = `Author: ${t.author || ''}`;
 
         const tagsEl = frag.querySelector('.technique-tags');
         for (const tag of (t.tags || [])) {

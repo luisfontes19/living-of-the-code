@@ -5,7 +5,6 @@ description: >
   runs of spaces or tabs. In many editors, code review UIs, and diffs, the visible area shows only
   the beginning of the line, so malicious logic remains off-screen unless reviewers horizontally
   scroll or inspect whitespace explicitly.
-author: LOC Team
 tags:
   - code-review
   - whitespace
