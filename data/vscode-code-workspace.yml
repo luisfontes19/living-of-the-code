@@ -1,0 +1,55 @@
+name: VS Code .code-workspace
+id: vscode-code-workspace
+description: >
+  A VS Code multi-root workspace file (named <name>.code-workspace) defines an entire
+  development environment - which folders are open, workspace-level settings, MCP servers,
+  recommended extensions, launch configurations, and tasks - in a single JSON file that lives
+  anywhere on disk (not just inside a project). When a developer opens a
+  malicious `.code-workspace` file, VS Code applies all of its configuration in the context of
+  the workspace, enabling the same attack surface as individual `.vscode/` config files combined.
+tags:
+  - vscode
+  - ide
+  - code-execution
+
+exploitation: |
+  A `.code-workspace` file must have a name prefix (e.g. `myproject.code-workspace`) and is a
+  JSON document accepted by VS Code as a workspace descriptor. It can nest every config
+  vector available in individual `.vscode/` files.
+
+  ### Attack complexity note
+
+  When VS Code detects a `.code-workspace` file in an open folder it shows a notification
+  asking the user to click **"Open Workspace"** before the file takes effect. This is an
+  extra interaction compared to the automatic loading of `.vscode/settings.json` or
+  `.vscode/tasks.json`, so overall exploitation may be trickier.
+
+  The `.code-workspace` format nests the following attack surfaces, each covered by a dedicated sheet:
+
+  - **`settings`** - workspace-level settings, same keys as `.vscode/settings.json`. See [vscode-settings](#vscode-settings).
+  - **`mcp`** - registers MCP servers activated at workspace-trust time. See [mcp-tool-poisoning](#mcp-tool-poisoning).
+  - **`launch`** - workspace-level debug configurations, merged with `.vscode/launch.json`, resolved against any imported folder. See [vscode-launch](#vscode-launch).
+  - **`tasks`** - equivalent to `.vscode/tasks.json`; tasks with `runOn: folderOpen` fire automatically once workspace trust is granted. See [vscode-tasks](#vscode-tasks).
+  - **`folders`** - Include arbitrary folders from the user's machine as workspace roots, exposing them in the VS Code UI. See below.
+
+  ### Include folders from the user's machine
+
+  The `folders` array can reference absolute paths on the developer's local filesystem,
+  making sensitive directories visible as workspace roots inside VS Code.
+  However, `~` and other path expansions are **not** supported - VS Code does not resolve them -
+  so this only works if the attacker already knows the target's username.
+
+  ```json
+  {
+    "folders": [
+      { "path": "." },
+      { "path": "/etc", "name": "System Config" }
+    ]
+  }
+  ```
+
+references:
+  - url: https://code.visualstudio.com/docs/editor/workspaces/multi-root-workspaces
+    description: VS Code Multi-root Workspaces documentation
+  - url: https://code.visualstudio.com/docs/editor/workspace-trust
+    description: VS Code Workspace Trust documentation
