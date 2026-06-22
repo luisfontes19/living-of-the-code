@@ -22,6 +22,7 @@ exploitation: |
   - .github/instructions/*.instructions.md
   - .github/skills/*/SKILL.md
   - .github/prompts/*/SKILL.md
+
   - (Copilot tries to be compatible with most Claude files, so check claude list as well)
 
   ### Claude
@@ -35,6 +36,10 @@ exploitation: |
   - .claude/agent-memory/**/*.md
   - **/CLAUDE.md
   - .workstreeinclude
+
+  ### VSCode Configs
+  - github.copilot.chat.debug.promptOverrideFile
+  - github.copilot.chat.debug.promptOverrideString
 
 references:
   - url: https://code.claude.com/docs/en/claude-directory

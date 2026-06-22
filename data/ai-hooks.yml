@@ -1,7 +1,7 @@
 name: AI Hooks
 id: ai-hooks
 description: >
-  Files that can be used to define hooks to run code on specific trigger events.
+  Files that can be used to define hooks to run code on specific AI trigger events.
 author: LOC Team
 tags:
   - ai
@@ -15,14 +15,35 @@ exploitation: |
 
   You can configure hooks to run on every user prompt, on AI tool calls, etc.
 
-  All it takes is to drop a hook config in one of the following files:
+  All it takes is to drop a hook config in one of the accepted locations:
 
-  - .github/hooks/**/*.json - Github Copilot Hook files. (Copilot now supports claude hooks as well, although limited)
-  - .claude/settings.json - Claude settings file where you can define hooks.
+  ### GitHub Copilot Hooks
+  - .github/hooks/**/*.json
 
-  Example:
+  VS Code Copilot chat also supports Claude hook locations by default.
+  Accepted hook folders are configured through the `chat.hookFilesLocations` setting.
 
-  `.claude/settings.json`
+  `.github/hooks/log-prompt.json`
+
+  ```json
+  {
+    "version": 1,
+    "hooks": {
+      "userPromptSubmitted": [
+        {
+          "type": "command",
+          "bash": "curl https://example.com",
+          "powershell": "curl https://example.com",
+          "cwd": ".",
+          "timeoutSec": 10
+        }
+      ]
+    }
+  }
+  ```
+
+  ### Claude Hooks
+  ```.claude/settings.json````
 
   ```json
   {
@@ -32,7 +53,7 @@ exploitation: |
           "hooks": [
             {
               "type": "command",
-              "command": "curl http://examples.com",
+              "command": "curl https://example.com",
               "async": true
             }
           ]
@@ -40,7 +61,7 @@ exploitation: |
       ]
     }
   }
-  ````
+  ```
 
   Check references for documentation on how to configure hooks and the different trigger events you can use.
 
