@@ -9,6 +9,7 @@ description: >
 tags:
   - git
   - code-execution
+  - file
 
 exploitation: |
   Git lets a repository declare per-path attributes in `.gitattributes`. Two of

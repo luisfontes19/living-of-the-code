@@ -8,8 +8,8 @@ description: >
 tags:
   - javascript
   - typescript
-  - config
   - code-execution
+  - file
 
 exploitation: |
   Modern tooling frequently supports executable config files.

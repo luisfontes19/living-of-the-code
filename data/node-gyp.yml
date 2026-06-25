@@ -9,6 +9,7 @@ description: >
 tags:
   - node
   - code-execution
+  - file
 
 exploitation: |
   When npm sees a `binding.gyp` in a package root, it invokes `node-gyp rebuild` to compile the

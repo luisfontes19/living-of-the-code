@@ -8,6 +8,7 @@ description: >
 tags:
   - npm
   - code-execution
+  - file
 
 exploitation: |
   Attackers publish packages to npm (often via typosquatting or dependency confusion)

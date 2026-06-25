@@ -11,6 +11,7 @@ tags:
   - vscode
   - ide
   - code-execution
+  - file
 
 exploitation: |
   A `.code-workspace` file must have a name prefix (e.g. `myproject.code-workspace`) and is a

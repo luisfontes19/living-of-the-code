@@ -10,6 +10,7 @@ tags:
   - pip
   - supply-chain
   - code-execution
+  - file
 
 exploitation: |
   pip's package source is configurable, and the configuration can live inside the

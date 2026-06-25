@@ -28,6 +28,19 @@ function copyRecursive(src, dest) {
 function loadAllTechniques() {
     const techniques = [];
 
+    function appendTechnique(item, entry) {
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+            return;
+        }
+        const sheetBase = path.basename(entry, path.extname(entry));
+        const normalized = { ...item };
+        if (!normalized._slug) {
+            normalized._slug = sheetBase;
+        }
+        normalized._sheet = entry;
+        techniques.push(normalized);
+    }
+
     function scanDir(dir) {
         const entries = fs.readdirSync(dir);
         for (const entry of entries) {
@@ -38,8 +51,13 @@ function loadAllTechniques() {
                 const content = fs.readFileSync(fullPath, 'utf8');
                 try {
                     const data = yaml.load(content);
-                    data._slug = path.basename(entry, path.extname(entry));
-                    techniques.push(data);
+                    if (Array.isArray(data)) {
+                        for (const item of data) {
+                            appendTechnique(item, entry);
+                        }
+                    } else {
+                        appendTechnique(data, entry);
+                    }
                 } catch (e) {
                     console.error(`Error parsing ${entry}: ${e.message}`);
                 }

@@ -9,6 +9,7 @@ tags:
   - vscode
   - ide
   - code-execution
+  - file
 
 exploitation: |
   VS Code reads `.vscode/launch.json` to populate the Run & Debug panel. Each

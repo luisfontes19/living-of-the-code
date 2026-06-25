@@ -9,6 +9,7 @@ tags:
   - git
   - husky
   - code-execution
+  - file
 
 exploitation: |
   Git hooks are scripts that run automatically at various points in the git workflow.

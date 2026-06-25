@@ -8,6 +8,7 @@ tags:
   - exfiltration
   - ide
   - json
+  - file
 
 exploitation: |
   IDEs fetch remote JSON schemas automatically for validation purposes. An AI

@@ -5,6 +5,8 @@ description: >
 tags:
   - ai
   - prompt-injection
+  - file
+  - code-execution
 
 exploitation: |
   AI tools that use prompts to generate code or perform actions can be vulnerable to prompt injection attacks.

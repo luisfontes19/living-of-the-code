@@ -10,6 +10,7 @@
     const grid = $('techniques-grid');
     const searchInput = $('search');
     const resultsCount = $('results-count');
+    const sourceCount = $('source-count');
     const modalOverlay = $('modal-overlay');
     const modalContent = $('modal-content');
 
@@ -36,10 +37,21 @@
         .then(r => r.json())
         .then(data => {
             techniques = data;
+            updateSourceCount();
             buildFilters();
             renderCards();
             handleHash();
         });
+
+    function updateSourceCount() {
+        if (!sourceCount) return;
+        const uniqueSheets = new Set(
+            techniques
+                .map(t => t._sheet || t._slug)
+                .filter(Boolean)
+        );
+        sourceCount.textContent = uniqueSheets.size;
+    }
 
     function buildFilters() {
         const tags = [...new Set(techniques.flatMap(t => t.tags || []))].sort();

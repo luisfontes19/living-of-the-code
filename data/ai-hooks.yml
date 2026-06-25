@@ -5,6 +5,8 @@ description: >
 tags:
   - ai
   - hooks
+  - file
+  - code-execution
 
 exploitation: |
   While prompt injection can allow you to have code execution on the AI side, you may find guardrails that prevent

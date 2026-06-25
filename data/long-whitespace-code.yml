@@ -8,7 +8,6 @@ description: >
 tags:
   - code-review
   - whitespace
-  - stealth
   - code-execution
 
 exploitation: |

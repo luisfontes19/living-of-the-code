@@ -7,6 +7,7 @@ description: >
 tags:
   - invisible-code
   - steganography
+  - code-execution
 
 exploitation: |
   Unicode includes ranges of characters that render as nothing — no glyph, no space.

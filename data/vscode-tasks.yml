@@ -9,12 +9,13 @@ tags:
   - vscode
   - ide
   - code-execution
+  - file
 
 exploitation: |
   VS Code allows defining tasks in `.vscode/tasks.json` that can execute shell commands.
   These tasks can be configured to run automatically on certain events, such as when the
-  folder is opened. Attackers can include a malicious `tasks.json` file in a repository
-  that executes code as soon as the developer opens the project in VS Code.
+  folder is opened.
+
   ```json
   {
     "version": "2.0.0",
@@ -38,6 +39,15 @@ exploitation: |
     ]
   }
   ```
+
+  **Note:**  As of VS Code 1.109, `task.allowAutomaticTasks` defaults to `off`, so `runOn: "folderOpen"`
+  tasks no longer execute automatically by default. However, this vector still applies when:
+
+  - the user enables automatic tasks (`task.allowAutomaticTasks: "on"`),
+  - the user approves automatic tasks for the workspace when prompted, or
+  - older VS Code versions are in use.
+
+  Tasks can still be paired with other techniques like the ones described in [VSCode Launch sheet](#vscode-launch)
 
 references:
   - url: https://code.visualstudio.com/docs/editor/workspace-trust

@@ -9,6 +9,7 @@ tags:
   - vscode
   - ide
   - code-execution
+  - file
 
 exploitation: |
   VS Code allows defining settings in `.vscode/settings.json`. These settings allow
