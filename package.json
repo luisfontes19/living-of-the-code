@@ -1,7 +1,7 @@
 {
-    "name": "living-of-the-code",
+    "name": "living-off-the-code",
     "version": "1.0.0",
-    "description": "Living of the Code - A catalog of attack techniques targeting developers",
+    "description": "Living off the Code - A catalog of attack techniques targeting developers",
     "scripts": {
         "build": "node build.js",
         "dev": "node build.js --watch",

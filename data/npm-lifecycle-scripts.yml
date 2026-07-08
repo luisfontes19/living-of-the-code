@@ -20,7 +20,7 @@ exploitation: |
   - **prepare** - Runs on before publishing, packaging and when installing the package.
 
 
-  Also check [binding.gyp](/living-of-the-code/#node-gyp)
+  Also check [binding.gyp](/living-off-the-code/#node-gyp)
 
   [NPMv12](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12/) has introduces some default settings to disable these scripts
 

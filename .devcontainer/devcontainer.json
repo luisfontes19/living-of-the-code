@@ -1,5 +1,5 @@
 {
-    "name": "living-of-the-code",
+    "name": "living-off-the-code",
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".."

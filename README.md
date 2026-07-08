@@ -1,4 +1,4 @@
-# Living of the Code (LOC)
+# Living off the Code (LOC)
 
 Developer machines are high-value targets. They hold source code, credentials, cloud access keys, and direct paths into production infrastructure — yet the tools developers use every day are rarely treated as an attack surface.
 
