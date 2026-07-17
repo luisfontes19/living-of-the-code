@@ -1,4 +1,4 @@
-name: Ruby onRails Config & Bin Files
+name: Ruby on Rails Config & Bin Files
 id: rails-config-files
 description: >
   Rails applications are configured through plain Ruby files under `bin/` and

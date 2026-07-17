@@ -58,7 +58,7 @@ exploitation: |
   by the shell at load time — which happens on every `kamal deploy`, `kamal
   redeploy`, and any other Kamal command that reads secrets.
 
-  For more info check [Ruby DotEnv](/#ruby-dotenv)
+  For more info check [Ruby DotEnv](#ruby-dotenv)
 
 references:
   - url: https://kamal-deploy.org/docs/hooks/
