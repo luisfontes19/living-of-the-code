@@ -1,5 +1,5 @@
-name: NPM Lifecycle Scripts
-id: npm-lifecycle-scripts
+name: Node NPM Lifecycle Scripts
+id: npde-npm-lifecycle-scripts
 description: >
   NPM packages can scripts like preinstall, postinstall, and install scripts in package.json
   that execute arbitrary commands automatically when a package is installed. Attackers

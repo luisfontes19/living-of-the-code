@@ -1,5 +1,5 @@
-name: .gitattributes
-id: gitattributes
+name: Git .gitattributes
+id: git-gitattributes
 description: >
   .gitattributes files can bind clean/smudge filter drivers and diff drivers to
   file patterns. The commands backing those drivers are executed by git during

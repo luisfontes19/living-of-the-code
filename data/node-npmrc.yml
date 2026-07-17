@@ -1,5 +1,5 @@
-name: .npmrc
-id: npmrc
+name: Node .npmrc
+id: node-npmrc
 description: >
   .npmrc files configure npm behaviour at the project or user level. Attackers
   can drop a malicious .npmrc in a repository to redirect package resolution to

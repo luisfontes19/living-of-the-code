@@ -1,5 +1,5 @@
-name: Maven pom.xml
-id: maven-pom
+name: Java Maven pom.xml
+id: java-maven-pom
 description: >
   A Maven pom.xml binds plugins to build lifecycle phases. Building or even
   importing a project executes those plugin goals, and goals like exec, antrun,

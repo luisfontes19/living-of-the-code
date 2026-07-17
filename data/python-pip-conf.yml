@@ -1,5 +1,5 @@
-name: pip.conf
-id: pip-conf
+name: Python pip.conf
+id: python-pip-conf
 description: >
   pip reads pip.conf (or pip.ini) and requirements files that can set index-url
   and extra-index-url. A committed pip config or requirements file can silently

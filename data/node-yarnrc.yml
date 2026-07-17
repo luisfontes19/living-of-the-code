@@ -1,5 +1,5 @@
-name: .yarnrc.yml yarnPath & Plugins
-id: yarnrc
+name: Node .yarnrc.yml yarnPath & Plugins
+id: node-yarnrc
 description: >
   Modern Yarn (Berry) reads .yarnrc.yml from the project. Keys like yarnPath,
   plugins, and the script-execution settings let a committed config point Yarn at
@@ -10,7 +10,7 @@ tags:
   - npm
   - code-execution
   - file
-  - supply-chain
+  - node
 
 exploitation: |
   Yarn 2+ (Berry) is configured through a project-level `.yarnrc.yml`, committed

@@ -1,5 +1,5 @@
-name: MCP Tool Poisoning
-id: mcp-tool-poisoning
+name: AI MCP Tool Poisoning
+id: ai-mcp-tool-poisoning
 description: >
   Malicious MCP servers can poison tool metadata (especially tool descriptions)
   so the model follows attacker instructions when selecting or invoking tools.

@@ -14,12 +14,13 @@
     const modalOverlay = $('modal-overlay');
     const modalContent = $('modal-content');
 
-    marked.setOptions({
-        highlight: function (code, lang) {
-            if (lang && hljs.getLanguage(lang)) {
-                return hljs.highlight(code, { language: lang }).value;
+    marked.use({
+        renderer: {
+            code({ text, lang }) {
+                const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+                const highlighted = hljs.highlight(text, { language }).value;
+                return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
             }
-            return hljs.highlightAuto(code).value;
         }
     });
 
@@ -147,7 +148,9 @@
         // Description
         const descSection = frag.querySelector('[data-section="description"]');
         if (t.description) {
-            renderMarkdown(descSection.querySelector('.section-content'), t.description);
+            // YAML folded scalars (>) collapse blank lines to \n; restore \n\n for Markdown paragraphs
+            const desc = t.description.replace(/\n(?!\n)/g, '\n\n');
+            renderMarkdown(descSection.querySelector('.section-content'), desc);
         } else {
             descSection.remove();
         }

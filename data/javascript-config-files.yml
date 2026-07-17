@@ -10,6 +10,7 @@ tags:
   - typescript
   - code-execution
   - file
+  - node
 
 exploitation: |
   Modern tooling frequently supports executable config files.
