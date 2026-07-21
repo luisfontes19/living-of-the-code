@@ -1,0 +1,46 @@
+name: Cursor Workspace git.exe
+id: cursor-git-binary
+description: >
+  On Windows, Cursor searches the current workspace while locating Git. A repository can place
+  an attacker-controlled `git.exe` in its root, causing Cursor to execute the binary automatically
+  when the project is opened, without a prompt or other user interaction.
+tags:
+  - cursor
+  - ide
+  - windows
+  - code-execution
+  - file
+
+exploitation: |
+  When Cursor opens a project on Windows, its Git discovery logic checks several candidate
+  locations, including the workspace root. If the repository contains a `git.exe` at its root,
+  Cursor may select and launch that executable as though it were the system Git client.
+
+  Mindgard demonstrated the behavior with a harmless proof of concept: Windows Calculator was
+  renamed to `git.exe` and committed at the repository root. Opening the project in Cursor was
+  sufficient to start Calculator. Cursor continued invoking the file while the workspace remained
+  open, so the trigger was neither a one-time launch nor dependent on the user running a task.
+
+  Process monitoring showed `Cursor.exe` creating the repository-controlled process with a Git
+  command such as:
+
+  ```text
+  git.exe rev-parse --show-toplevel
+  ```
+
+  An attacker can replace the harmless demonstration binary with arbitrary code, which then runs
+  with the privileges of the developer using Cursor. This turns opening an untrusted repository
+  into a zero-click code-execution path. Mindgard last verified the issue on April 30, 2026, using
+  Cursor 3.2.16 on Windows, and publicly disclosed it on July 14, 2026 after unsuccessful attempts
+  to coordinate remediation.
+
+  **Mitigations:** until the behavior is fixed, open untrusted repositories only in a disposable
+  VM, Windows Sandbox, or another isolated environment. Managed Windows environments can use
+  AppLocker or Windows App Control path rules to prevent `git.exe` from executing out of developer
+  workspace directories. EDR or other parent-aware controls can additionally detect or block
+  workspace binaries launched by Cursor. Do not rely only on hashes, since each repository can
+  contain a different binary.
+
+references:
+  - url: https://mindgard.ai/blog/cursor-0day-when-full-disclosure-becomes-the-only-protection-left
+    description: "Mindgard - Cursor 0day: When Full Disclosure Becomes the Only Protection Left"
