@@ -83,6 +83,8 @@ exploitation: |
   - `config/initializers/filter_parameter_logging.rb`
   - `config/initializers/inflections.rb`
 
+  Any code in these files run when you run the rails application
+
   ### YAML config files - ERB-evaluated before parsing
 
   Several `config/` YAML files are passed through ERB before being parsed as
